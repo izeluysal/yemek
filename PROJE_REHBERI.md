@@ -74,3 +74,28 @@ Veritabanında tutulacak temel tablolar ve alanlar:
 ### D. Tarif Yönetim Paneli (Admin - `/admin`)
 * Sadece site sahibinin giriş yapabileceği şifreli yönetim alanı.
 * Yeni tarif ekleme, fotoğraf yükleme, etiket tanımlama ve var olan tarifleri silme/düzenleme işlevleri.
+
+
+---
+
+## 6. Teknik Eksikler ve İyileştirmeler
+
+### A. Veritabanı Güvenliği (Kritik)
+* **Üretimde SQLite yerine PostgreSQL zorunlu olmalı:** Docker içinde SQLite dosya kilitlenmesi ve eşzamanlılık riski taşır; canlı ortamda PostgreSQL kullanılmalıdır.
+* **Veritabanı dışa açılmamalı:** PostgreSQL portu (`5432`) ana makineye (host) publish edilmemeli, sadece Docker iç ağı (bridge network) üzerinden backend konteynerine açılmalıdır.
+
+### B. Görsel Yükleme Boyut/Format Sınırları (Kritik)
+* **İzinli format listesi:** Sadece `jpg`, `jpeg`, `png`, `webp` kabul edilmeli; SVG yüklemeleri (XSS riski) engellenmelidir.
+* **Sunucu tarafında görsel işleme:** Yüklenen görseller sunucuda Python (Pillow) ile yeniden encode edilip EXIF verileri temizlenmeli, dosya adı UUID ile değiştirilmelidir.
+* **Boyut ve optimizasyon:** Tek görsel sınırı maksimum 2 MB olmalı, WebP formatına sıkıştırılarak `uploads/` dizininde saklanmalıdır.
+
+### C. Nginx SSL ve Proxy Ayarları (Kritik)
+* **HTTPS Yönlendirme:** Port 80 (HTTP) üzerinden gelen tüm trafik `301 Moved Permanently` ile HTTPS'e yönlendirilmelidir.
+* **Güvenlik Başlıkları:** `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options` başlıkları Nginx seviyesinde eklenmelidir.
+
+* **İstemci Boyut Sınırı:** `client_max_body_size 5M;` tanımlanarak büyük dosyalarla sunucunun kilitlenmesi engellenmelidir.
+
+### D. Güvenlik ve Admin Yetkilendirme (Kritik)
+* **Kimlik Doğrulama:** Admin paneli için güvenli Cookie tabanlı Session veya JWT altyapısı kurulmalıdır.
+* **Parola Güvenliği:** Parolalar veritabanında asla düz metin tutulmamalı, `bcrypt` veya `argon2id` ile hash'lenmelidir.
+* **Rate Limiting:** `/admin/login` uç noktasına brute-force saldırılarını engellemek için Nginx veya FastAPI middleware seviyesinde istek sınırlaması getirilmelidir.
