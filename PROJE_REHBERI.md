@@ -17,7 +17,7 @@
 ## 2. Teknoloji Yığını (Tech Stack)
 * **Backend:** Python (FastAPI veya Flask - REST API mimarisi).
 * **Frontend:** Modern, sade, mobil uyumlu HTML5, TailwindCSS ve Vanilla JavaScript.
-* **Veritabanı:** PostgreSQL veya SQLite (Konteyner içinde çalışan, ilişkisel veritabanı).
+* **Veritabanı:** PostgreSQL (Konteyner içinde çalışan, izole ilişkisel veritabanı).
 * **Görsel/Medya Depolama:** Sunucu üzerinde `uploads/` volume dizini (Docker bind mount).
 
 ---
@@ -75,27 +75,40 @@ Veritabanında tutulacak temel tablolar ve alanlar:
 * Sadece site sahibinin giriş yapabileceği şifreli yönetim alanı.
 * Yeni tarif ekleme, fotoğraf yükleme, etiket tanımlama ve var olan tarifleri silme/düzenleme işlevleri.
 
-
 ---
 
 ## 6. Teknik Eksikler ve İyileştirmeler
 
 ### A. Veritabanı Güvenliği (Kritik)
-* **Üretimde SQLite yerine PostgreSQL zorunlu olmalı:** Docker içinde SQLite dosya kilitlenmesi ve eşzamanlılık riski taşır; canlı ortamda PostgreSQL kullanılmalıdır.
-* **Veritabanı dışa açılmamalı:** PostgreSQL portu (`5432`) ana makineye (host) publish edilmemeli, sadece Docker iç ağı (bridge network) üzerinden backend konteynerine açılmalıdır.
+* **Üretimde SQLite yerine PostgreSQL zorunlu olmalı:** Docker içinde SQLite tek dosya yaklaşımı; eşzamanlılık, yedekleme ve veri bütünlüğü açısından canlı trafik için zayıftır.
+* **Veritabanı dışa açılmamalı:** PostgreSQL portu (`5432`) host'a publish edilmemeli, sadece Docker internal network üzerinden backend konteyneri erişebilmelidir.
+* **Least-privilege kullanıcı modeli:** Uygulama için ayrı bir DB kullanıcısı tanımlanmalı; `SUPERUSER`, `CREATEDB`, `CREATEROLE` yetkileri verilmemelidir.
+* **Kimlik bilgisi yönetimi:** DB şifreleri `.env` düz metin yerine Docker secrets veya ortam değişkenleri izolasyonu ile tutulmalıdır.
+* **Yedekleme ve geri dönüş planı:** Otomatik günlük yedek, saklama politikası (örn. 7/30 gün) ve point-in-time recovery stratejisi tanımlanmalıdır.
+* **Migration disiplini:** Şema değişiklikleri manuel değil Alembic versiyonlu migration ile yönetilmelidir.
 
 ### B. Görsel Yükleme Boyut/Format Sınırları (Kritik)
-* **İzinli format listesi:** Sadece `jpg`, `jpeg`, `png`, `webp` kabul edilmeli; SVG yüklemeleri (XSS riski) engellenmelidir.
-* **Sunucu tarafında görsel işleme:** Yüklenen görseller sunucuda Python (Pillow) ile yeniden encode edilip EXIF verileri temizlenmeli, dosya adı UUID ile değiştirilmelidir.
-* **Boyut ve optimizasyon:** Tek görsel sınırı maksimum 2 MB olmalı, WebP formatına sıkıştırılarak `uploads/` dizininde saklanmalıdır.
+* **Maksimum dosya boyutu sınırı:** Nginx ve uygulama seviyesinde 5 MB/10 MB sınırı uygulanmalıdır.
+* **Dosya tür doğrulaması:** Sadece uzantı kontrolü yapılmamalı; MIME type ve magic bytes doğrulaması zorunlu olmalıdır.
+* **İzinli format listesi:** Sadece `jpg`, `jpeg`, `png`, `webp` kabul edilmeli; SVG yüklemeleri (XSS riski) tamamen engellenmelidir.
+* **Görsel güvenli işleme:** Yüklenen görseller sunucuda Python (Pillow) ile yeniden encode edilip EXIF verileri temizlenmeli, dosya adı UUID ile kaydedilmelidir.
+* **Boyut ve optimizasyon:** En fazla 4096x4096 çözünürlük sınırı konulmalı, WebP formatına sıkıştırılarak `uploads/` dizininde saklanmalıdır.
+* **Upload klasörü erişim kısıtı:** Yürütülebilir dosya çalıştırma engellenmeli, dizin listeleme (`autoindex`) kapalı olmalıdır.
 
 ### C. Nginx SSL ve Proxy Ayarları (Kritik)
-* **HTTPS Yönlendirme:** Port 80 (HTTP) üzerinden gelen tüm trafik `301 Moved Permanently` ile HTTPS'e yönlendirilmelidir.
-* **Güvenlik Başlıkları:** `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options` başlıkları Nginx seviyesinde eklenmelidir.
+* **TLS Hardening:** Sadece TLS 1.2 ve TLS 1.3 açık olmalı, zayıf şifreleme takımları devre dışı bırakılmalıdır.
 
-* **İstemci Boyut Sınırı:** `client_max_body_size 5M;` tanımlanarak büyük dosyalarla sunucunun kilitlenmesi engellenmelidir.
+* **HTTPS Yönlendirme:** Port 80 (HTTP) üzerinden gelen tüm trafik `301 Moved Permanently` ile HTTPS'e yönlendirilmelidir.
+
+* **Güvenlik Başlıkları:** `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` ve uygun bir `Content-Security-Policy` eklenmelidir.
+* **Proxy Header Standardı:** `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto` başlıkları Nginx tarafından backend'e eksiksiz iletilmelidir.
+* **Upload ve Timeout Senkronizasyonu:** `client_max_body_size`, `proxy_read_timeout` ve `proxy_send_timeout` değerleri backend limitleriyle uyumlu yapılandırılmalıdır.
+* **Rate Limiting:** Özellikle `/admin` ve dosya yükleme endpoint'leri için Nginx rate limiting uygulanmalıdır.
 
 ### D. Güvenlik ve Admin Yetkilendirme (Kritik)
-* **Kimlik Doğrulama:** Admin paneli için güvenli Cookie tabanlı Session veya JWT altyapısı kurulmalıdır.
-* **Parola Güvenliği:** Parolalar veritabanında asla düz metin tutulmamalı, `bcrypt` veya `argon2id` ile hash'lenmelidir.
-* **Rate Limiting:** `/admin/login` uç noktasına brute-force saldırılarını engellemek için Nginx veya FastAPI middleware seviyesinde istek sınırlaması getirilmelidir.
+* **Kimlik Doğrulama Standardı:** Admin paneli için güvenli, imzalı Cookie tabanlı Session veya JWT altyapısı kurulmalıdır.
+* **Parola Saklama Standardı:** Parolalar veritabanında asla düz metin tutulmamalı; `Argon2id` veya güçlü `bcrypt` ile hash'lenmelidir.
+* **Brute-force Koruması:** Başarısız oturum açma denemelerine karşı kilitlenme, gecikme ve IP bazlı istek sınırlaması uygulanmalıdır.
+* **Oturum Güvenliği:** Cookie'ler `HttpOnly`, `Secure`, `SameSite=Strict` bayraklarına sahip olmalı ve kısa geçerlilik süresi (TTL) bulunmalıdır.
+* **CSRF ve XSS Kontrolleri:** Admin panelinde CSRF token doğrulaması, şablon seviyesinde otomatik escaping uygulanmalıdır.
+* **Yetki ve Denetim (Audit):** Kritik admin işlemleri (tarif silme, düzenleme) için zaman damgalı log tutulmalıdır.
