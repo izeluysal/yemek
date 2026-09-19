@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Paneli - Yemek Tarifi Defteri{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-lg-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>📊 Admin Paneli</h1>
+            <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-danger">Çıkış</a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-6 col-lg-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Toplam Tarif</h6>
+                <h3 class="card-text">{{ stats.total_recipes }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Toplam Etiket</h6>
+                <h3 class="card-text">{{ stats.total_tags }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation Tabs -->
+<ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="recipes-tab" data-bs-toggle="tab" href="#recipes" role="tab">
+            📝 Tarifler
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="tags-tab" data-bs-toggle="tab" href="#tags" role="tab">
+            🏷️ Etiketler
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- Recipes Tab -->
+    <div class="tab-pane fade show active" id="recipes" role="tabpanel">
+        <div class="mb-3">
+            <a href="{{ url_for('admin_new_recipe') }}" class="btn btn-success">
+                ➕ Yeni Tarif Ekle
+            </a>
+        </div>
+        
+        {% if recipes %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Başlık</th>
+                            <th>Etiketler</th>
+                            <th>Eklenme Tarihi</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for recipe in recipes %}
+                        <tr>
+                            <td>
+                                <strong>{{ recipe.title }}</strong>
+                            </td>
+                            <td>
+                                {% for tag in recipe.tags %}
+                                    <span class="badge bg-secondary badge-tag">{{ tag.name }}</span>
+                                {% endfor %}
+                            </td>
+                            <td>{{ recipe.created_at.strftime('%d.%m.%Y') }}</td>
+                            <td>
+                                <a href="{{ url_for('admin_edit_recipe', recipe_id=recipe.id) }}" class="btn btn-sm btn-warning">✏️ Düzenle</a>
+                                <form method="post" action="{{ url_for('admin_delete_recipe', recipe_id=recipe.id) }}" style="display:inline;" onsubmit="return confirm('Silmek istediğinize emin misiniz?')">
+                                    <button type="submit" class="btn btn-sm btn-danger">🗑️ Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                Henüz tarif eklenmemiş. <a href="{{ url_for('admin_new_recipe') }}">Şimdi ekle</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Tags Tab -->
+    <div class="tab-pane fade" id="tags" role="tabpanel">
+        <div class="mb-3">
+            <form method="post" action="{{ url_for('admin_new_tag') }}" class="d-flex gap-2">
+                <input 
+                    type="text" 
+                    name="name" 
+                    class="form-control" 
+                    placeholder="Yeni etiket adı"
+                    required
+                >
+                <button type="submit" class="btn btn-success">➕ Etiket Ekle</button>
+            </form>
+        </div>
+        
+        {% if tags %}
+            <div class="row">
+                {% for tag in tags %}
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ tag.name }}</h5>
+                            <p class="card-text text-muted">
+                                {{ tag.recipes.count() }} tarif
+                            </p>
+                            <form method="post" action="{{ url_for('admin_delete_tag', tag_id=tag.id) }}" style="display:inline;" onsubmit="return confirm('Bu etiketi silmek istediğinize emin misiniz?')">
+                                <button type="submit" class="btn btn-sm btn-danger">🗑️ Sil</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                Henüz etiket eklenmemiş.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

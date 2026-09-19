@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Giriş - Yemek Tarifi Defteri{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 col-lg-4 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">🔐 Admin Paneli</h4>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </div>
+                {% endif %}
+                
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Şifre</label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="password" 
+                            name="password" 
+                            required 
+                            autofocus
+                        >
+                        <small class="form-text text-muted mt-2">
+                            Admin şifrenizi girin.
+                        </small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                </form>
+                
+                <hr class="my-3">
+                
+                <div class="text-center">
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm w-100">← Anasayfaya Dön</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

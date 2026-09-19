@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ recipe.title }} - Yemek Tarifi Defteri{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <!-- Recipe Header -->
+        {% if recipe.image_url %}
+            <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}" class="img-fluid rounded mb-4 w-100" style="max-height: 400px; object-fit: cover;">
+        {% endif %}
+        
+        <div class="mb-4">
+            <h1 class="display-4 mb-3">{{ recipe.title }}</h1>
+            
+            {% if recipe.description %}
+                <p class="lead text-muted">{{ recipe.description }}</p>
+            {% endif %}
+            
+            <!-- Recipe Info -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted">Bilgiler</h6>
+                            <ul class="list-unstyled">
+                                {% if recipe.prep_time %}
+                                    <li><strong>⏱️ Hazırlık Süresi:</strong> {{ recipe.prep_time }} dakika</li>
+                                {% endif %}
+                                {% if recipe.cook_time %}
+                                    <li><strong>🔥 Pişirme Süresi:</strong> {{ recipe.cook_time }} dakika</li>
+                                {% endif %}
+                                {% if recipe.servings %}
+                                    <li><strong>🍽️ Porsiyon:</strong> {{ recipe.servings }} kişi</li>
+                                {% endif %}
+                                <li><strong>📅 Eklenme Tarihi:</strong> {{ recipe.created_at.strftime('%d.%m.%Y') }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tags -->
+                {% if recipe.tags %}
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title text-muted">Etiketler</h6>
+                                <div>
+                                    {% for tag in recipe.tags %}
+                                        <a href="{{ url_for('search', tags=[tag.id]) }}" class="badge bg-primary badge-tag">{{ tag.name }}</a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Ingredients -->
+            <div class="col-md-5">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">📋 Malzemeler</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            {% for ingredient in recipe.ingredients %}
+                                <li class="list-group-item">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="ingredient-{{ loop.index }}">
+                                        <label class="form-check-label" for="ingredient-{{ loop.index }}">
+                                            {{ ingredient }}
+                                        </label>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="col-md-7">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">👨‍🍳 Yapılış</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="recipe-instructions">
+                            {{ recipe.instructions | safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Back Button -->
+        <div class="mb-4">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-primary">← Geri Dön</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .recipe-instructions {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        line-height: 1.8;
+    }
+    
+    .list-group-item {
+        border-left: 4px solid #667eea;
+    }
+</style>
+{% endblock %}

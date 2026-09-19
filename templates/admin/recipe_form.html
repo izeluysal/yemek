@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if recipe %}Tarifi Düzenle{% else %}Yeni Tarif Ekle{% endif %} - Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <h1 class="mb-4">
+            {% if recipe %}✏️ Tarifi Düzenle{% else %}➕ Yeni Tarif Ekle{% endif %}
+        </h1>
+        
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data" class="card p-4">
+            <!-- Title -->
+            <div class="mb-3">
+                <label for="title" class="form-label"><strong>Tarif Başlığı *</strong></label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="title" 
+                    name="title" 
+                    required
+                    value="{% if recipe %}{{ recipe.title }}{% endif %}"
+                >
+            </div>
+            
+            <!-- Description -->
+            <div class="mb-3">
+                <label for="description" class="form-label">Kısa Açıklama</label>
+                <textarea 
+                    class="form-control" 
+                    id="description" 
+                    name="description" 
+                    rows="2"
+                >{% if recipe %}{{ recipe.description }}{% endif %}</textarea>
+            </div>
+            
+            <!-- Image -->
+            <div class="mb-3">
+                <label for="image" class="form-label">Tarif Fotoğrafı</label>
+                <input 
+                    type="file" 
+                    class="form-control" 
+                    id="image" 
+                    name="image" 
+                    accept="image/jpeg,image/png,image/webp"
+                >
+                <small class="form-text text-muted">JPG, PNG veya WebP formatında (Max 10MB)</small>
+                {% if recipe and recipe.image_url %}
+                    <div class="mt-2">
+                        <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}" style="max-width: 200px; max-height: 200px;">
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Time & Servings -->
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="prep_time" class="form-label">Hazırlık Süresi (dakika)</label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="prep_time" 
+                        name="prep_time"
+                        value="{% if recipe %}{{ recipe.prep_time or '' }}{% endif %}"
+                    >
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="cook_time" class="form-label">Pişirme Süresi (dakika)</label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="cook_time" 
+                        name="cook_time"
+                        value="{% if recipe %}{{ recipe.cook_time or '' }}{% endif %}"
+                    >
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="servings" class="form-label">Porsiyon (kişi)</label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="servings" 
+                        name="servings"
+                        value="{% if recipe %}{{ recipe.servings or 4 }}{% else %}4{% endif %}"
+                    >
+                </div>
+            </div>
+            
+            <!-- Ingredients -->
+            <div class="mb-3">
+                <label for="ingredients" class="form-label"><strong>Malzemeler *</strong></label>
+                <textarea 
+                    class="form-control" 
+                    id="ingredients" 
+                    name="ingredients" 
+                    rows="6"
+                    placeholder="Her satıra bir malzeme yazın&#10;Örn:&#10;2 bardak un&#10;1 yumurta&#10;200 ml süt"
+                    required
+                >{% if recipe %}{% for ing in recipe.ingredients %}{{ ing }}
+{% endfor %}{% endif %}</textarea>
+                <small class="form-text text-muted">Her malzemeyi ayrı satırda yazın</small>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="mb-3">
+                <label for="instructions" class="form-label"><strong>Yapılış *</strong></label>
+                <textarea 
+                    class="form-control" 
+                    id="instructions" 
+                    name="instructions" 
+                    rows="8"
+                    placeholder="Adım adım yapılışını yazın..."
+                    required
+                >{% if recipe %}{{ recipe.instructions }}{% endif %}</textarea>
+            </div>
+            
+            <!-- Tags -->
+            <div class="mb-3">
+                <label class="form-label"><strong>Etiketler</strong></label>
+                <div>
+                    {% for tag in tags %}
+                    <div class="form-check">
+                        <input 
+                            class="form-check-input" 
+                            type="checkbox" 
+                            name="tags" 
+                            value="{{ tag.id }}" 
+                            id="tag-{{ tag.id }}"
+                            {% if recipe and tag in recipe.tags %}checked{% endif %}
+                        >
+                        <label class="form-check-label" for="tag-{{ tag.id }}">
+                            {{ tag.name }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if not tags %}
+                        <p class="text-muted">Etiket bulunmamaktadır. <a href="{{ url_for('admin_panel') }}">Etiket ekle</a></p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    {% if recipe %}💾 Güncelle{% else %}➕ Tarifi Ekle{% endif %}
+                </button>
+                <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-secondary btn-lg">← Panele Dön</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
