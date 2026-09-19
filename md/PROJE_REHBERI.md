@@ -4,20 +4,17 @@
 ---
 
 ## 1. Dağıtım, Barındırma ve Mimari (Deployment)
-* **Canlı Adres:** `yemek.izeluysal.com.tr`
-* **Çalışma Ortamı:** Docker Konteyner (Docker & Docker Compose).
-* **Sunucu Mimarisi:**
-  * Uygulama izole bir Docker konteyneri içinde ayağa kalkacak.
-  * Önünde Nginx (Ters Proxy) çalışacak ve gelen istekleri `yemek.izeluysal.com.tr` üzerinden konteynerin ilgili portuna yönlendirecek.
-  * SSL sertifikası (HTTPS) tanımlı olacak.
-* **Açılış/Yönetim:** Geliştirme aşamasında yerel makinede VS Code ve Docker Desktop üzerinden açılacak; canlıya alırken sunucudaki Docker üzerinde `docker compose up -d` ile çalıştırılacak.
+* **Canlı Alan Adı:** `yemek.izeluysal.com.tr`
+* **Geliştirme Ortamı:** Yerel bilgisayarda Python venv içinde.
+* **Veritabanı Depolama:** SQLite dosyası (`data/app.db`) yerel klasörde konumlandırılacak.
+* **Açılış/Yönetim:** VS Code ve Python venv üzerinden `python application.py` ile çalıştırılacak.
 
 ---
 
 ## 2. Teknoloji Yığını (Tech Stack)
 * **Backend:** Python (FastAPI veya Flask - REST API mimarisi).
 * **Frontend:** Modern, sade, mobil uyumlu HTML5, TailwindCSS ve Vanilla JavaScript.
-* **Veritabanı:** PostgreSQL (Konteyner içinde çalışan, izole ilişkisel veritabanı).
+* **Veritabanı:** SQLite 3 (Dosya tabanlı, `data/` klasöründe konumlandırılacak).
 * **Görsel/Medya Depolama:** Sunucu üzerinde `uploads/` volume dizini (Docker bind mount).
 
 ---
@@ -79,13 +76,12 @@ Veritabanında tutulacak temel tablolar ve alanlar:
 
 ## 6. Teknik Eksikler ve İyileştirmeler
 
-### A. Veritabanı Güvenliği (Kritik)
-* **Üretimde SQLite yerine PostgreSQL zorunlu olmalı:** Docker içinde SQLite tek dosya yaklaşımı; eşzamanlılık, yedekleme ve veri bütünlüğü açısından canlı trafik için zayıftır.
-* **Veritabanı dışa açılmamalı:** PostgreSQL portu (`5432`) host'a publish edilmemeli, sadece Docker internal network üzerinden backend konteyneri erişebilmelidir.
-* **Least-privilege kullanıcı modeli:** Uygulama için ayrı bir DB kullanıcısı tanımlanmalı; `SUPERUSER`, `CREATEDB`, `CREATEROLE` yetkileri verilmemelidir.
-* **Kimlik bilgisi yönetimi:** DB şifreleri `.env` düz metin yerine Docker secrets veya ortam değişkenleri izolasyonu ile tutulmalıdır.
-* **Yedekleme ve geri dönüş planı:** Otomatik günlük yedek, saklama politikası (örn. 7/30 gün) ve point-in-time recovery stratejisi tanımlanmalıdır.
-* **Migration disiplini:** Şema değişiklikleri manuel değil Alembic versiyonlu migration ile yönetilmelidir.
+### A. Veritabanı Güvenliği (SQLite)
+* **SQLite WAL Modu:** Dosya, WAL (Write-Ahead Logging) modu etkinleştirilip açılmalıdır (`PRAGMA journal_mode=WAL;`), eşzamanlılık ve crash recovery için.
+* **Veritabanı Dosya İzinleri:** SQLite dosyası (`data/app.db`) ve ilişkili dosyaları (`data/app.db-wal`, `data/app.db-shm`) sadece uygulama kullanıcısına erişilebilir olmalı (640 permissions).
+* **Backup Stratejisi:** Dosya basit şekilde backup alınabilir; otomatik günlük yedekleme cron veya uygulama başlatma sırasında yapılmalı. Minimum 7 günlük saklama.
+* **Veritabanı Dosya Lokasyonu:** Üretim ortamında `data/` klasörü ayrı bir volume olarak mount edilmelidir, container yeniden başlatıldığında veri kaybolmaz.
+* **Migration Disiplini:** Şema değişiklikleri manuel değil Alembic veya benzer versiyonlu migration tool ile yönetilmelidir.
 
 ### B. Görsel Yükleme Boyut/Format Sınırları (Kritik)
 * **Maksimum dosya boyutu sınırı:** Nginx ve uygulama seviyesinde 5 MB/10 MB sınırı uygulanmalıdır.
@@ -95,17 +91,7 @@ Veritabanında tutulacak temel tablolar ve alanlar:
 * **Boyut ve optimizasyon:** En fazla 4096x4096 çözünürlük sınırı konulmalı, WebP formatına sıkıştırılarak `uploads/` dizininde saklanmalıdır.
 * **Upload klasörü erişim kısıtı:** Yürütülebilir dosya çalıştırma engellenmeli, dizin listeleme (`autoindex`) kapalı olmalıdır.
 
-### C. Nginx SSL ve Proxy Ayarları (Kritik)
-* **TLS Hardening:** Sadece TLS 1.2 ve TLS 1.3 açık olmalı, zayıf şifreleme takımları devre dışı bırakılmalıdır.
-
-* **HTTPS Yönlendirme:** Port 80 (HTTP) üzerinden gelen tüm trafik `301 Moved Permanently` ile HTTPS'e yönlendirilmelidir.
-
-* **Güvenlik Başlıkları:** `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` ve uygun bir `Content-Security-Policy` eklenmelidir.
-* **Proxy Header Standardı:** `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto` başlıkları Nginx tarafından backend'e eksiksiz iletilmelidir.
-* **Upload ve Timeout Senkronizasyonu:** `client_max_body_size`, `proxy_read_timeout` ve `proxy_send_timeout` değerleri backend limitleriyle uyumlu yapılandırılmalıdır.
-* **Rate Limiting:** Özellikle `/admin` ve dosya yükleme endpoint'leri için Nginx rate limiting uygulanmalıdır.
-
-### D. Güvenlik ve Admin Yetkilendirme (Kritik)
+### C. Güvenlik ve Admin Yetkilendirme (Kritik)
 * **Kimlik Doğrulama Standardı:** Admin paneli için güvenli, imzalı Cookie tabanlı Session veya JWT altyapısı kurulmalıdır.
 * **Parola Saklama Standardı:** Parolalar veritabanında asla düz metin tutulmamalı; `Argon2id` veya güçlü `bcrypt` ile hash'lenmelidir.
 * **Brute-force Koruması:** Başarısız oturum açma denemelerine karşı kilitlenme, gecikme ve IP bazlı istek sınırlaması uygulanmalıdır.
