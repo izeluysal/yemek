@@ -276,6 +276,11 @@ def register_routes(app):
         """Check if file extension is allowed"""
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
     
+    # Favicon handler (suppress browser requests)
+    @app.route('/favicon.ico')
+    def favicon():
+        return '', 204
+    
     # Error handlers
     @app.errorhandler(404)
     def not_found(error):
