@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Sayfa Bulunamadı - Yemek Tarifi Defteri{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 mx-auto text-center">
+        <div class="card border-0 shadow-lg">
+            <div class="card-body py-5">
+                <h1 class="display-1 text-danger">404</h1>
+                <h2 class="mb-3">Sayfa Bulunamadı</h2>
+                <p class="lead text-muted mb-4">
+                    Aradığınız sayfa bulunamadı veya silinmiş olabilir.
+                </p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                        🏠 Anasayfaya Dön
+                    </a>
+                    <a href="{{ url_for('search') }}" class="btn btn-outline-secondary btn-lg">
+                        🔍 Ara
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

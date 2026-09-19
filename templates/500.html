@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Sunucu Hatası - Yemek Tarifi Defteri{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 mx-auto text-center">
+        <div class="card border-0 shadow-lg">
+            <div class="card-body py-5">
+                <h1 class="display-1 text-warning">500</h1>
+                <h2 class="mb-3">Sunucu Hatası</h2>
+                <p class="lead text-muted mb-4">
+                    Üzgünüz, sunucuda bir hata oluştu. Lütfen daha sonra tekrar deneyin.
+                </p>
+                <div class="alert alert-warning" role="alert">
+                    <small>Sorun devam ederse, lütfen site yöneticisine bildiriniz.</small>
+                </div>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                        🏠 Anasayfaya Dön
+                    </a>
+                    <a href="{{ url_for('search') }}" class="btn btn-outline-secondary btn-lg">
+                        🔍 Ara
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
