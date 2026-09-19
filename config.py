@@ -1,16 +1,21 @@
 """Flask Configuration"""
 import os
+from pathlib import Path
 
 class Config:
     """Application Configuration"""
+    
+    # Get base directory
+    BASE_DIR = Path(__file__).parent.resolve()
     
     # Flask
     SECRET_KEY = 'yemek-tarifi-defteri-secret-key-2024'
     FLASK_ENV = 'development'
     DEBUG = True
     
-    # Database
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///data/app.db'
+    # Database - use absolute path with forward slashes for SQLite
+    DATABASE_PATH = BASE_DIR / 'data' / 'app.db'
+    SQLALCHEMY_DATABASE_URI = f'sqlite:///{DATABASE_PATH.as_posix()}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
     
