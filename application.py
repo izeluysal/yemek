@@ -120,9 +120,14 @@ def register_routes(app):
         all_ingredients_set = set()
         for recipe in recipes_list:
             if recipe.ingredients:
-                # Split by comma or newline, strip whitespace
-                ingredients = [ing.strip() for ing in recipe.ingredients.replace('\n', ',').split(',')]
-                all_ingredients_set.update([ing for ing in ingredients if ing])
+                # ingredients is stored as JSON list, handle both list and string formats
+                if isinstance(recipe.ingredients, list):
+                    ingredients_list = recipe.ingredients
+                else:
+                    # If it's a string, split by comma or newline
+                    ingredients_list = [ing.strip() for ing in recipe.ingredients.replace('\n', ',').split(',')]
+                
+                all_ingredients_set.update([ing.strip() for ing in ingredients_list if ing])
         
         all_ingredients = sorted(list(all_ingredients_set))
         
