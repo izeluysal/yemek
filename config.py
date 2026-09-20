@@ -30,7 +30,7 @@ class Config:
     # Application Settings
     RECIPES_PER_PAGE = 12
     HOST = '127.0.0.1'
-    PORT = 5000
+    PORT = 5003
     
     # WAL Mode for SQLite
     SQLALCHEMY_ENGINE_OPTIONS = {

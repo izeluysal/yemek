@@ -11,7 +11,7 @@ import urllib.error
 def check_health():
     """Check application health by making a request to /"""
     try:
-        response = urllib.request.urlopen('http://localhost:5004/', timeout=5)
+        response = urllib.request.urlopen('http://localhost:5003/', timeout=5)
         if response.status == 200:
             return 0  # Healthy
         else:
