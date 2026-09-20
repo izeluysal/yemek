@@ -3,6 +3,41 @@
 {% block title %}Anasayfa - Yemek Tarifi Defteri{% endblock %}
 
 {% block content %}
+<style>
+  /* Metin ve etiket okunabilirlik kuralları */
+  body, p, span, div, small, label {
+    color: #1e293b !important;
+  }
+  .card-title, h1, h2, h3, h4, h5 {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+  }
+  .card-text, .card p, .card small {
+    color: #475569 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.4 !important;
+  }
+  /* Butonlar */
+  .btn-success, .btn-primary, button[type="submit"], a.btn {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+  }
+  /* Arama ve filtreleme alanları */
+  input[type="text"], .form-control {
+    color: #0f172a !important;
+    border: 1.5px solid #94a3b8 !important;
+    background-color: #ffffff !important;
+  }
+  input::placeholder {
+    color: #64748b !important;
+    opacity: 1 !important;
+  }
+  /* İstatistik kutuları */
+  .text-muted, .stat-label, .kpi-label {
+    color: #64748b !important;
+    font-weight: 500 !important;
+  }
+</style>
 <!-- Hero Section -->
 <div class="mb-3">
     <div class="card text-white" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
