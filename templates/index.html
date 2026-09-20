@@ -56,29 +56,6 @@
                    oninput="filterRecipesByIngredientsLive()">
             <button type="submit" class="btn btn-primary px-3 px-sm-5" style="font-weight: 600; border-radius: 8px; white-space: nowrap;">Ara</button>
         </form>
-        
-<!-- Ingredient Filter Dropdown -->
-        <div style="margin: 1rem auto 0; padding: 0;">
-            <div style="border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
-                <div style="padding: 1.5rem;">
-                    <h6 style="margin-bottom: 1rem; font-weight: 700; color: #0f172a; font-size: 1.1rem;">🥘 Dolapta Ne Var?</h6>
-                    
-                    <div id="ingredientContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.5rem;">
-                        {% for ingredient in all_ingredients %}
-                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; border-radius: 8px; background: white; border: 1px solid #cbd5e1; transition: all 0.2s ease;" class="ingredient-label" onmouseover="this.style.backgroundColor='#e2e8f0'" onmouseout="this.style.backgroundColor='white'">
-                            <input type="checkbox" class="ingredient-checkbox" value="{{ ingredient }}" style="cursor: pointer; width: 16px; height: 16px;">
-                            <span style="color: #1e293b; font-size: 0.9rem; font-weight: 500; text-transform: capitalize;">{{ ingredient }}</span>
-                        </label>
-                        {% endfor %}
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button type="button" id="filterBtn" style="padding: 12px 24px; background-color: #059669; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: background-color 0.2s; box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);" onmouseover="this.style.backgroundColor='#047857'" onmouseout="this.style.backgroundColor='#059669'" onclick="filterByIngredientsBackend()">Filtrele</button>
-                        <button type="button" id="clearBtn" style="padding: 12px 24px; background-color: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#cbd5e1'" onmouseout="this.style.backgroundColor='#e2e8f0'" onclick="clearIngredientFilterBackend()">Temizle</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

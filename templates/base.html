@@ -215,6 +215,11 @@
                         <a class="nav-link" href="{{ url_for('search') }}">Ara</a>
                     </li>
                     <li class="nav-item">
+                        <button type="button" class="btn btn-outline-light btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#fridgeModal" style="font-weight: 600; border-radius: 6px;">
+                            🧊 Dolapta Ne Var?
+                        </button>
+                    </li>
+                    <li class="nav-item">
                         {% if session.get('admin_logged_in') %}
                             <div class="btn-group" role="group">
                                 <a class="nav-link" href="{{ url_for('admin_panel') }}">Admin Paneli</a>
@@ -254,7 +259,240 @@
         </div>
     </footer>
 
+    <!-- Fridge Modal - Dolapta Ne Var? -->
+    <div class="modal fade" id="fridgeModal" tabindex="-1" aria-labelledby="fridgeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);">
+                <!-- Modal Header -->
+                <div class="modal-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; padding: 1.5rem;">
+                    <h5 class="modal-title" id="fridgeModalLabel" style="color: white; font-weight: 700; font-size: 1.3rem;">
+                        🧊 Dolabındaki Malzemeleri Seç
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body" style="padding: 2rem; background-color: #f8fafc; max-height: 70vh; overflow-y: auto;">
+                    <!-- Hidden container for ingredients (created by template) -->
+                    <div id="fridgeHiddenIngredients" style="display: none;">
+                        {% for ingredient in all_ingredients %}
+                        <input type="hidden" class="fridge-ingredient-data" value="{{ ingredient }}">
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Kategoriye göre organize edilmiş malzemeler -->
+                    <div id="fridgeIngredientsCategories">
+                        <!-- Kategoriler JavaScript tarafından dinamik olarak doldurulacak -->
+                    </div>
+                    
+                    <!-- Selected Ingredients Preview -->
+                    <div id="selectedIngredientsPreview" style="display: none; margin-bottom: 1rem; padding: 1rem; background-color: #e0f2fe; border-radius: 8px; border-left: 4px solid #0284c7; position: sticky; top: 0; z-index: 10;">
+                        <small style="color: #0c4a6e; font-weight: 600;">✓ Seçili Malzemeler:</small>
+                        <div id="selectedTagsList" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 0.5rem;"></div>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer" style="border-top: 1px solid #e2e8f0; padding: 1rem 2rem; background-color: #ffffff;">
+                    <button type="button" class="btn btn-outline-secondary" id="fridgeClearBtn" onclick="fridgeClearIngredients()" style="border-radius: 6px; font-weight: 600;">
+                        🗑️ Seçimleri Temizle
+                    </button>
+                    <button type="button" class="btn btn-primary" id="fridgeFilterBtn" onclick="fridgeFilterRecipes()" style="background-color: #10b981; border-color: #10b981; border-radius: 6px; font-weight: 600;">
+                        🔍 Tarifleri Bul
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Fridge Modal JavaScript Functions -->
+    <script>
+        // Malzemeleri kategorilere göre ayır
+        const ingredientCategories = {
+            '🥬 Sebzeler': ['domates', 'biber', 'soğan', 'sarımsak', 'mısır', 'lahana', 'brokoli', 'havuç', 'patlıcan', 'kabak', 'patates', 'yaprak'],
+            '🍎 Meyveler': ['elma', 'muz', 'portakal', 'limon', 'çilek', 'üzüm', 'dut'],
+            '🥩 Protein & Et': ['tavuk', 'kırmızı et', 'balık', 'yumurta', 'sosyal et', 'karides'],
+            '🧀 Süt Ürünleri': ['peynir', 'süt', 'yoğurt', 'tereyağı', 'kaymak'],
+            '🌾 Baklagiller & Tahıl': ['nohut', 'lentil', 'fasulye', 'pirinç', 'bulgur', 'arpa', 'mısır unı'],
+            '🍯 Temel Gıdalar & Baharatlar': ['un', 'tuz', 'şeker', 'yağ', 'zeytinyağı', 'tereyağı', 'sirke', 'sos', 'baharat', 'kırmızı biber', 'karabiber', 'tarçın', 'maydanoz', 'dill', 'kişniş']
+        };
+        
+        function categorizeIngredient(ingredient) {
+            const lowerIngredient = ingredient.toLowerCase().trim();
+            for (let [category, items] of Object.entries(ingredientCategories)) {
+                if (items.some(item => lowerIngredient.includes(item) || item.includes(lowerIngredient))) {
+                    return category;
+                }
+            }
+            return '📌 Diğer';
+        }
+        
+        function initializeFridgeModal() {
+            // Malzemeleri hidden input'larından oku
+            const allIngredients = Array.from(document.querySelectorAll('.fridge-ingredient-data')).map(el => el.value);
+            const categorized = {};
+            
+            allIngredients.forEach(ingredient => {
+                const category = categorizeIngredient(ingredient);
+                if (!categorized[category]) {
+                    categorized[category] = [];
+                }
+                categorized[category].push(ingredient);
+            });
+            
+            // Alfabetik sırala
+            Object.keys(categorized).forEach(category => {
+                categorized[category].sort();
+            });
+            
+            // Kategori başlıklarını sırala
+            const sortedCategories = Object.keys(categorized).sort();
+            
+            // Modal body'yi doldur
+            const container = document.getElementById('fridgeIngredientsCategories');
+            container.innerHTML = '';
+            
+            sortedCategories.forEach(category => {
+                // Kategori başlığı
+                const categoryHeader = document.createElement('div');
+                categoryHeader.style.marginBottom = '1.5rem';
+                
+                const title = document.createElement('h6');
+                title.textContent = category;
+                title.style.color = '#1e293b';
+                title.style.fontWeight = '700';
+                title.style.marginBottom = '0.75rem';
+                title.style.paddingBottom = '0.5rem';
+                title.style.borderBottom = '2px solid #10b981';
+                categoryHeader.appendChild(title);
+                
+                // Kategori içindeki malzemeler (4-5 sütunlu responsive grid)
+                const ingredientsGrid = document.createElement('div');
+                ingredientsGrid.style.display = 'grid';
+                ingredientsGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(180px, 1fr))';
+                ingredientsGrid.style.gap = '12px';
+                ingredientsGrid.style.marginBottom = '1rem';
+                
+                categorized[category].forEach(ingredient => {
+                    const label = document.createElement('label');
+                    label.style.display = 'flex';
+                    label.style.alignItems = 'center';
+                    label.style.gap = '0.75rem';
+                    label.style.cursor = 'pointer';
+                    label.style.padding = '0.75rem';
+                    label.style.borderRadius = '8px';
+                    label.style.background = 'white';
+                    label.style.border = '1.5px solid #e2e8f0';
+                    label.style.transition = 'all 0.2s ease';
+                    label.style.fontWeight = '500';
+                    label.className = 'fridge-ingredient-label';
+                    
+                    label.onmouseover = function() {
+                        this.style.borderColor = '#10b981';
+                        this.style.backgroundColor = '#f0fdf4';
+                        this.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.15)';
+                    };
+                    label.onmouseout = function() {
+                        this.style.borderColor = '#e2e8f0';
+                        this.style.backgroundColor = 'white';
+                        this.style.boxShadow = 'none';
+                    };
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'fridge-ingredient-checkbox';
+                    checkbox.value = ingredient;
+                    checkbox.style.cursor = 'pointer';
+                    checkbox.style.width = '18px';
+                    checkbox.style.height = '18px';
+                    checkbox.style.accentColor = '#10b981';
+                    checkbox.addEventListener('change', updateSelectedIngredientsPreview);
+                    
+                    const span = document.createElement('span');
+                    span.textContent = ingredient;
+                    span.style.color = '#1e293b';
+                    span.style.fontSize = '0.9rem';
+                    span.style.textTransform = 'capitalize';
+                    
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+                    ingredientsGrid.appendChild(label);
+                });
+                
+                categoryHeader.appendChild(ingredientsGrid);
+                container.appendChild(categoryHeader);
+            });
+        }
+        
+        function updateSelectedIngredientsPreview() {
+            const selectedCheckboxes = document.querySelectorAll('.fridge-ingredient-checkbox:checked');
+            const preview = document.getElementById('selectedIngredientsPreview');
+            const tagsList = document.getElementById('selectedTagsList');
+            
+            tagsList.innerHTML = '';
+            
+            if (selectedCheckboxes.length > 0) {
+                preview.style.display = 'block';
+                selectedCheckboxes.forEach(checkbox => {
+                    const tag = document.createElement('span');
+                    tag.className = 'badge';
+                    tag.style.backgroundColor = '#10b981';
+                    tag.style.color = 'white';
+                    tag.style.padding = '6px 12px';
+                    tag.style.fontSize = '0.85rem';
+                    tag.style.borderRadius = '6px';
+                    tag.style.fontWeight = '600';
+                    tag.textContent = checkbox.value;
+                    tagsList.appendChild(tag);
+                });
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        
+        function fridgeClearIngredients() {
+            document.querySelectorAll('.fridge-ingredient-checkbox').forEach(cb => cb.checked = false);
+            updateSelectedIngredientsPreview();
+        }
+        
+        function fridgeFilterRecipes() {
+            // Malzemeleri index.html deki checkbox'larına aktar
+            const fridgeCheckboxes = document.querySelectorAll('.fridge-ingredient-checkbox:checked');
+            const indexCheckboxes = document.querySelectorAll('.ingredient-checkbox');
+            
+            // Önce tümünü temizle
+            indexCheckboxes.forEach(cb => cb.checked = false);
+            
+            // Seçilenleri işaretle
+            fridgeCheckboxes.forEach(fridgeCheckbox => {
+                const matchingCheckbox = Array.from(indexCheckboxes).find(cb => cb.value === fridgeCheckbox.value);
+                if (matchingCheckbox) {
+                    matchingCheckbox.checked = true;
+                }
+            });
+            
+            // Modal'ı kapat
+            const modal = bootstrap.Modal.getInstance(document.getElementById('fridgeModal'));
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Filtreleme işlemini başlat
+            setTimeout(() => {
+                filterByIngredientsBackend();
+            }, 100);
+        }
+        
+        // Modal açılırken kategorileri başlat
+        document.getElementById('fridgeModal').addEventListener('show.bs.modal', function() {
+            if (document.getElementById('fridgeIngredientsCategories').children.length === 0) {
+                initializeFridgeModal();
+            }
+        });
+    </script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>
