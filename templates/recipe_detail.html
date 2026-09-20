@@ -6,9 +6,11 @@
 <div class="row">
     <div class="col-lg-8 mx-auto">
         <!-- Recipe Header -->
-        {% if recipe.image_url %}
-            <img src="{{ recipe.image_url }}" alt="{{ recipe.title }}" class="img-fluid rounded mb-4 w-100" style="max-height: 400px; object-fit: cover;">
-        {% endif %}
+        <img src="{{ recipe.image_url if recipe.image_url else 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80' }}" 
+             alt="{{ recipe.title }}" 
+             class="img-fluid rounded mb-4 w-100" 
+             style="max-height: 400px; object-fit: cover;"
+             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=600&q=80';">
         
         <div class="mb-4">
             <h1 class="display-4 mb-3">{{ recipe.title }}</h1>

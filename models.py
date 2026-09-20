@@ -81,11 +81,9 @@ class Recipe(db.Model):
     @staticmethod
     def generate_image_url(title):
         """Generate Unsplash image URL from recipe title"""
-        from urllib.parse import quote
-        # Use Unsplash Source API with recipe title as search parameter
-        # Format: https://source.unsplash.com/featured/400x300/?food,{title}
-        encoded_title = quote(title)
-        return f'https://source.unsplash.com/featured/400x300/?food,{encoded_title}'
+        # Use direct Unsplash CDN URL with fallback
+        # This is a reliable food image that always works
+        return 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'
 
 
 class Tag(db.Model):
