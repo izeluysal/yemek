@@ -4,8 +4,8 @@ services:
     container_name: yemek
     restart: always
     # Uygulama kodu root olarak çalışmıyor (bkz. Dockerfile > entrypoint.sh, uid 10001).
-    # Container root olarak başlar, entrypoint.sh her başlangıçta ecedocfiles ve
-    # static/uploads/isletmeler volume mount'larının sahipliğini otomatik onarıp
+    # Container root olarak başlar, entrypoint.sh her başlangıçta yemekfiles ve
+    # static/yemekfiles volume mount'larının sahipliğini otomatik onarıp
     # gosu ile ecedocappuser'a düşer — named volume'ların ilk oluşumda root'a ait
     # kalması (bkz. md/softwarestandarts.md > "Named volume ownership: otomatik
     # onaran entrypoint") artık manuel chown gerektirmiyor.
