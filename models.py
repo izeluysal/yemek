@@ -85,9 +85,9 @@ class Recipe(db.Model):
     @staticmethod
     def generate_image_url(title):
         """Generate Unsplash image URL from recipe title"""
-        # Use direct Unsplash CDN URL with fallback
-        # This is a reliable food image that always works
-        return 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'
+        # Use Turkish cuisine/food image from Unsplash
+        # Turkish cooking pot and traditional food
+        return 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600&q=80'
 
 
 class Tag(db.Model):

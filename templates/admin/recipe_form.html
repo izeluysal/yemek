@@ -58,6 +58,20 @@
                 {% endif %}
             </div>
             
+            <!-- Image URL -->
+            <div class="mb-3">
+                <label for="image_url" class="form-label">Veya Resim URL'i Girin</label>
+                <input 
+                    type="url" 
+                    class="form-control" 
+                    id="image_url" 
+                    name="image_url" 
+                    placeholder="https://example.com/image.jpg"
+                    value="{% if recipe and recipe.image_url and recipe.image_url.startswith('http') %}{{ recipe.image_url }}{% endif %}"
+                >
+                <small class="form-text text-muted">Dosya yükleme yerine doğrudan bir URL belirtebilirsiniz</small>
+            </div>
+            
             <!-- Time & Servings -->
             <div class="row">
                 <div class="col-md-4 mb-3">

@@ -257,9 +257,15 @@ def register_routes(app):
             if Recipe.query.filter_by(slug=slug).first():
                 return render_template('admin/recipe_form.html', error='Recipe already exists')
             
-            # Handle image upload
+            # Handle image
             image_url = None
-            if 'image' in request.files:
+            
+            # Check for image URL input first
+            image_url_input = request.form.get('image_url', '').strip()
+            if image_url_input:
+                image_url = image_url_input
+            # Otherwise, check for image file upload
+            elif 'image' in request.files:
                 image = request.files['image']
                 if image and image.filename and allowed_file(image.filename):
                     # Save image
@@ -267,7 +273,7 @@ def register_routes(app):
                     image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                     image_url = f"/uploads/{filename}"
             
-            # If no image uploaded, use Unsplash API
+            # If no image uploaded or URL provided, use default Turkish food image
             if not image_url:
                 image_url = Recipe.generate_image_url(title)
             
@@ -285,10 +291,20 @@ def register_routes(app):
             )
             
             # Add tags
-            for tag_id in tag_ids:
-                tag = Tag.query.get(tag_id)
-                if tag:
-                    recipe.tags.append(tag)
+            if tag_ids:
+                # Add selected tags
+                for tag_id in tag_ids:
+                    tag = Tag.query.get(tag_id)
+                    if tag:
+                        recipe.tags.append(tag)
+            else:
+                # If no tags selected, assign default "Diğer" tag
+                default_tag = Tag.query.filter_by(name='Diğer').first()
+                if not default_tag:
+                    default_tag = Tag(name='Diğer')
+                    db.session.add(default_tag)
+                    db.session.flush()  # Flush to get the ID before adding to recipe
+                recipe.tags.append(default_tag)
             
             db.session.add(recipe)
             db.session.commit()
@@ -318,25 +334,35 @@ def register_routes(app):
             recipe.cook_time = request.form.get('cook_time', type=int) or None
             recipe.servings = request.form.get('servings', type=int) or 4
             
-            # Handle image upload
-            if 'image' in request.files:
+            # Handle image
+            # Check for image URL input first
+            image_url_input = request.form.get('image_url', '').strip()
+            if image_url_input:
+                recipe.image_url = image_url_input
+            # Otherwise, check for image file upload
+            elif 'image' in request.files:
                 image = request.files['image']
                 if image and image.filename and allowed_file(image.filename):
                     filename = f"{recipe.slug}_{datetime.utcnow().timestamp()}.{image.filename.rsplit('.', 1)[1].lower()}"
                     image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                     recipe.image_url = f"/uploads/{filename}"
             
-            # If no image and title changed, regenerate Unsplash URL
-            if not recipe.image_url or (not recipe.image_url.startswith('/uploads/') and recipe.title != request.form.get('title')):
-                recipe.image_url = Recipe.generate_image_url(recipe.title)
-            
             # Update tags
             tag_ids = request.form.getlist('tags', type=int)
             recipe.tags.clear()
-            for tag_id in tag_ids:
-                tag = Tag.query.get(tag_id)
-                if tag:
-                    recipe.tags.append(tag)
+            if tag_ids:
+                for tag_id in tag_ids:
+                    tag = Tag.query.get(tag_id)
+                    if tag:
+                        recipe.tags.append(tag)
+            else:
+                # If no tags selected, assign default "Diğer" tag
+                default_tag = Tag.query.filter_by(name='Diğer').first()
+                if not default_tag:
+                    default_tag = Tag(name='Diğer')
+                    db.session.add(default_tag)
+                    db.session.flush()
+                recipe.tags.append(default_tag)
             
             db.session.commit()
             return redirect(url_for('admin_panel'))
