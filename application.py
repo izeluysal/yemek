@@ -12,6 +12,136 @@ from config import Config
 from models import db, Recipe, Tag, Comment
 
 
+def _seed_recipes():
+    """Seed database with sample Turkish recipes"""
+    recipes_data = [
+        {
+            'name': 'Mücver',
+            'description': 'Cıvata tadında lezzetli mücver',
+            'ingredients': ['Kabak', 'Beyaz peynir', 'Dill', 'Yumurta', 'Un', 'Tuz', 'Karabıber'],
+            'instructions': '1. Kabaklarını rendeleyip tuzu tuzla iyice ıslak suyunu sıkıştırınız.\n2. Peynir, yumurta ve dill ile karıştırıp hamur oluşturunuz.\n3. Unla kaplayıp kızartınız.',
+            'cook_time': 30,
+            'servings': 4,
+            'tags': ['Sebze', 'Klasik']
+        },
+        {
+            'name': 'Patlıcan Beğendi',
+            'description': 'Patlıcanın püresi üzerine et soslu patlıcan beğendisi',
+            'ingredients': ['Patlıcan', 'Domates', 'Soğan', 'Et', 'Tereyağ', 'Süt', 'Tuz'],
+            'instructions': '1. Patlıcanları haşlayıp püreleyin.\n2. Et kıyması soğan ve domate ile kavurun.\n3. Patlıcan püresine yoğun besi türetip üzerine etin koyunuz.',
+            'cook_time': 45,
+            'servings': 4,
+            'tags': ['Sebze', 'Ağır']
+        },
+        {
+            'name': 'Çoban Salatası',
+            'description': 'Domates, salatalık, soğan ve maydanozdan yapılan sade ama lezzetli salata',
+            'ingredients': ['Domates', 'Salatalık', 'Soğan', 'Maydanoz', 'Limon suyu', 'Zeytinyağı', 'Tuz'],
+            'instructions': '1. Tüm malzemeleri ince kıyıp bir kaseye alınız.\n2. Zeytinyağı ve limon suyu ekleyerek karıştırınız.\n3. Soğuk servis yapınız.',
+            'cook_time': 10,
+            'servings': 4,
+            'tags': ['Salata', 'Hafif']
+        },
+        {
+            'name': 'Tabbule',
+            'description': 'Bulgurdan yapılan Orta Doğu usulu salatası',
+            'ingredients': ['Bulgur', 'Domates', 'Salatalık', 'Maydanoz', 'Nane', 'Limon', 'Zeytinyağı'],
+            'instructions': '1. Bulguru haşlayıp soğutunuz.\n2. Tüm sebzeleri ince doğrayınız.\n3. Limon ve zeytinyağı ile karıştırıp servis yapınız.',
+            'cook_time': 20,
+            'servings': 4,
+            'tags': ['Salata', 'Hafif']
+        },
+        {
+            'name': 'Mercimek Çorbası',
+            'description': 'Kızıl mercimekten yapılan sıcak ve besleyici çorba',
+            'ingredients': ['Kızıl mercimek', 'Sebze suyu', 'Soğan', 'Tereyağ', 'Tuz', 'Pul biber'],
+            'instructions': '1. Mercimekleri suyla birlikte kaynatıp yumuşatınız.\n2. Soğan ve tereyağ ile kavurulmuş aromatik ekleyiniz.\n3. Blenderden geçirerek pürüleyin.',
+            'cook_time': 40,
+            'servings': 4,
+            'tags': ['Çorba', 'Hafif']
+        },
+        {
+            'name': 'Yaprak Sarması',
+            'description': 'Yaprakların içine pirinç ve et dolması',
+            'ingredients': ['Yaprak (Asma)', 'Pirinç', 'Et', 'Soğan', 'Tuz', 'Biber', 'Su'],
+            'instructions': '1. Yaprakları ısıtıp hazırlayınız.\n2. Dolgu için pirinç, et ve soğan karıştırınız.\n3. Yapraklara doldurup sararak bulaştırınız.',
+            'cook_time': 60,
+            'servings': 4,
+            'tags': ['Geleneksel', 'Zaman Alıcı']
+        },
+        {
+            'name': 'Kuru Fasulye',
+            'description': 'Geleneksel Türk mutfağında yer alan kuru fasulye yemeği',
+            'ingredients': ['Kuru fasulye', 'Etlik kıyma', 'Soğan', 'Domates', 'Biber salçası', 'Tuz'],
+            'instructions': '1. Fasulyeyi bir gece önceden ıslatıp haşlayınız.\n2. Etli soğan ve salça ile kaynattığınız sosu hazırlayınız.\n3. Tuzlandırıp servis yapınız.',
+            'cook_time': 90,
+            'servings': 4,
+            'tags': ['Et', 'Geleneksel']
+        },
+        {
+            'name': 'Göz Tarifi',
+            'description': 'Pide arasında et ve peynir dolması',
+            'ingredients': ['Pide', 'Kıymadan et', 'Beyaz peynir', 'Soğan', 'Tuz', 'Biber'],
+            'instructions': '1. Pide hamurunda aç yaparak dolgu koyunuz.\n2. Üstüne peynir serperek fırına alınız.\n3. Altı sarıya çevirileceğe kadar pişiriniz.',
+            'cook_time': 25,
+            'servings': 2,
+            'tags': ['Ekmek', 'Fırın']
+        },
+        {
+            'name': 'Adana Kebap',
+            'description': 'Adana\'nın meşhur kırmızı biber ve ette yapılan kebabı',
+            'ingredients': ['Etli kıyma', 'Kırmızı biber', 'Tuz', 'Pul biber', 'Maydanoz', 'Soğan'],
+            'instructions': '1. Kıymaya biber, tuz ve baharatları ekleyerek yoğunlaştırınız.\n2. Şişlere sararak şeklini oluşturunuz.\n3. Ateşte çevirerek pişiriniz.',
+            'cook_time': 20,
+            'servings': 2,
+            'tags': ['Kebap', 'Et']
+        },
+        {
+            'name': 'Baklava',
+            'description': 'Fıstık dolulı katlamalı tatlı',
+            'ingredients': ['Yufka', 'Fıstık', 'Tereyağ', 'Şeker', 'Su', 'Limon suyu', 'Tarçın'],
+            'instructions': '1. Yufkaları tereyağla katman katman hazırlayınız.\n2. Fıstık ve şekeri serperek rulosu yapınız.\n3. Fırında pişirip şerbeti dökünüz.',
+            'cook_time': 45,
+            'servings': 8,
+            'tags': ['Tatlı', 'Fırın']
+        },
+    ]
+    
+    # Create tags
+    tag_names = ['Sebze', 'Klasik', 'Ağır', 'Salata', 'Hafif', 'Çorba', 'Geleneksel', 
+                 'Zaman Alıcı', 'Et', 'Ekmek', 'Fırın', 'Kebap', 'Tatlı']
+    tags = {}
+    for tag_name in tag_names:
+        tag = Tag.query.filter_by(name=tag_name).first()
+        if not tag:
+            tag = Tag(name=tag_name)
+            db.session.add(tag)
+        tags[tag_name] = tag
+    
+    db.session.commit()
+    
+    # Add recipes
+    for recipe_data in recipes_data:
+        recipe = Recipe(
+            name=recipe_data['name'],
+            description=recipe_data['description'],
+            ingredients=json.dumps(recipe_data['ingredients']),
+            instructions=recipe_data['instructions'],
+            cook_time=recipe_data['cook_time'],
+            servings=recipe_data['servings'],
+            created_at=datetime.now()
+        )
+        db.session.add(recipe)
+        db.session.flush()  # Get the recipe ID
+        
+        # Add tags to recipe
+        for tag_name in recipe_data['tags']:
+            if tag_name in tags:
+                recipe.tags.append(tags[tag_name])
+    
+    db.session.commit()
+
+
 def create_app():
     """Application Factory"""
     app = Flask(__name__)
@@ -23,8 +153,12 @@ def create_app():
     # Create necessary folders
     with app.app_context():
         Path(app.config['UPLOAD_FOLDER']).mkdir(exist_ok=True)
-        Path('data').mkdir(exist_ok=True)
+        Path('yemekdata').mkdir(exist_ok=True)
         db.create_all()
+        
+        # Seed default recipes if database is empty
+        if Recipe.query.count() == 0:
+            _seed_recipes()
     
     # Register routes
     register_routes(app)
