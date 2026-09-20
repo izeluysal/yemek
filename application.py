@@ -16,7 +16,7 @@ def _seed_recipes():
     """Seed database with sample Turkish recipes"""
     recipes_data = [
         {
-            'name': 'Mücver',
+            'title': 'Mücver',
             'description': 'Cıvata tadında lezzetli mücver',
             'ingredients': ['Kabak', 'Beyaz peynir', 'Dill', 'Yumurta', 'Un', 'Tuz', 'Karabıber'],
             'instructions': '1. Kabaklarını rendeleyip tuzu tuzla iyice ıslak suyunu sıkıştırınız.\n2. Peynir, yumurta ve dill ile karıştırıp hamur oluşturunuz.\n3. Unla kaplayıp kızartınız.',
@@ -25,7 +25,7 @@ def _seed_recipes():
             'tags': ['Sebze', 'Klasik']
         },
         {
-            'name': 'Patlıcan Beğendi',
+            'title': 'Patlıcan Beğendi',
             'description': 'Patlıcanın püresi üzerine et soslu patlıcan beğendisi',
             'ingredients': ['Patlıcan', 'Domates', 'Soğan', 'Et', 'Tereyağ', 'Süt', 'Tuz'],
             'instructions': '1. Patlıcanları haşlayıp püreleyin.\n2. Et kıyması soğan ve domate ile kavurun.\n3. Patlıcan püresine yoğun besi türetip üzerine etin koyunuz.',
@@ -34,7 +34,7 @@ def _seed_recipes():
             'tags': ['Sebze', 'Ağır']
         },
         {
-            'name': 'Çoban Salatası',
+            'title': 'Çoban Salatası',
             'description': 'Domates, salatalık, soğan ve maydanozdan yapılan sade ama lezzetli salata',
             'ingredients': ['Domates', 'Salatalık', 'Soğan', 'Maydanoz', 'Limon suyu', 'Zeytinyağı', 'Tuz'],
             'instructions': '1. Tüm malzemeleri ince kıyıp bir kaseye alınız.\n2. Zeytinyağı ve limon suyu ekleyerek karıştırınız.\n3. Soğuk servis yapınız.',
@@ -43,7 +43,7 @@ def _seed_recipes():
             'tags': ['Salata', 'Hafif']
         },
         {
-            'name': 'Tabbule',
+            'title': 'Tabbule',
             'description': 'Bulgurdan yapılan Orta Doğu usulu salatası',
             'ingredients': ['Bulgur', 'Domates', 'Salatalık', 'Maydanoz', 'Nane', 'Limon', 'Zeytinyağı'],
             'instructions': '1. Bulguru haşlayıp soğutunuz.\n2. Tüm sebzeleri ince doğrayınız.\n3. Limon ve zeytinyağı ile karıştırıp servis yapınız.',
@@ -52,7 +52,7 @@ def _seed_recipes():
             'tags': ['Salata', 'Hafif']
         },
         {
-            'name': 'Mercimek Çorbası',
+            'title': 'Mercimek Çorbası',
             'description': 'Kızıl mercimekten yapılan sıcak ve besleyici çorba',
             'ingredients': ['Kızıl mercimek', 'Sebze suyu', 'Soğan', 'Tereyağ', 'Tuz', 'Pul biber'],
             'instructions': '1. Mercimekleri suyla birlikte kaynatıp yumuşatınız.\n2. Soğan ve tereyağ ile kavurulmuş aromatik ekleyiniz.\n3. Blenderden geçirerek pürüleyin.',
@@ -61,7 +61,7 @@ def _seed_recipes():
             'tags': ['Çorba', 'Hafif']
         },
         {
-            'name': 'Yaprak Sarması',
+            'title': 'Yaprak Sarması',
             'description': 'Yaprakların içine pirinç ve et dolması',
             'ingredients': ['Yaprak (Asma)', 'Pirinç', 'Et', 'Soğan', 'Tuz', 'Biber', 'Su'],
             'instructions': '1. Yaprakları ısıtıp hazırlayınız.\n2. Dolgu için pirinç, et ve soğan karıştırınız.\n3. Yapraklara doldurup sararak bulaştırınız.',
@@ -70,7 +70,7 @@ def _seed_recipes():
             'tags': ['Geleneksel', 'Zaman Alıcı']
         },
         {
-            'name': 'Kuru Fasulye',
+            'title': 'Kuru Fasulye',
             'description': 'Geleneksel Türk mutfağında yer alan kuru fasulye yemeği',
             'ingredients': ['Kuru fasulye', 'Etlik kıyma', 'Soğan', 'Domates', 'Biber salçası', 'Tuz'],
             'instructions': '1. Fasulyeyi bir gece önceden ıslatıp haşlayınız.\n2. Etli soğan ve salça ile kaynattığınız sosu hazırlayınız.\n3. Tuzlandırıp servis yapınız.',
@@ -79,7 +79,7 @@ def _seed_recipes():
             'tags': ['Et', 'Geleneksel']
         },
         {
-            'name': 'Göz Tarifi',
+            'title': 'Göz Tarifi',
             'description': 'Pide arasında et ve peynir dolması',
             'ingredients': ['Pide', 'Kıymadan et', 'Beyaz peynir', 'Soğan', 'Tuz', 'Biber'],
             'instructions': '1. Pide hamurunda aç yaparak dolgu koyunuz.\n2. Üstüne peynir serperek fırına alınız.\n3. Altı sarıya çevirileceğe kadar pişiriniz.',
@@ -88,7 +88,7 @@ def _seed_recipes():
             'tags': ['Ekmek', 'Fırın']
         },
         {
-            'name': 'Adana Kebap',
+            'title': 'Adana Kebap',
             'description': 'Adana\'nın meşhur kırmızı biber ve ette yapılan kebabı',
             'ingredients': ['Etli kıyma', 'Kırmızı biber', 'Tuz', 'Pul biber', 'Maydanoz', 'Soğan'],
             'instructions': '1. Kıymaya biber, tuz ve baharatları ekleyerek yoğunlaştırınız.\n2. Şişlere sararak şeklini oluşturunuz.\n3. Ateşte çevirerek pişiriniz.',
@@ -97,7 +97,7 @@ def _seed_recipes():
             'tags': ['Kebap', 'Et']
         },
         {
-            'name': 'Baklava',
+            'title': 'Baklava',
             'description': 'Fıstık dolulı katlamalı tatlı',
             'ingredients': ['Yufka', 'Fıstık', 'Tereyağ', 'Şeker', 'Su', 'Limon suyu', 'Tarçın'],
             'instructions': '1. Yufkaları tereyağla katman katman hazırlayınız.\n2. Fıstık ve şekeri serperek rulosu yapınız.\n3. Fırında pişirip şerbeti dökünüz.',
@@ -122,10 +122,14 @@ def _seed_recipes():
     
     # Add recipes
     for recipe_data in recipes_data:
+        # Create slug from title
+        slug = recipe_data['title'].lower().replace(' ', '-').replace('ç', 'c').replace('ğ', 'g').replace('ı', 'i').replace('ş', 's').replace('ü', 'u').replace('ö', 'o')
+        
         recipe = Recipe(
-            name=recipe_data['name'],
+            title=recipe_data['title'],
+            slug=slug,
             description=recipe_data['description'],
-            ingredients=json.dumps(recipe_data['ingredients']),
+            ingredients=recipe_data['ingredients'],
             instructions=recipe_data['instructions'],
             cook_time=recipe_data['cook_time'],
             servings=recipe_data['servings'],
