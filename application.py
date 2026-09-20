@@ -105,6 +105,96 @@ def _seed_recipes():
             'servings': 8,
             'tags': ['Tatlı', 'Fırın']
         },
+        {
+            'title': 'Imam Baildi',
+            'description': 'Patlıcan, domates ve soğanla doldurulmuş Osmanlı tatlısı',
+            'ingredients': ['Patlıcan', 'Domates', 'Soğan', 'Sarımsak', 'Maydanoz', 'Zeytinyağı', 'Tuz'],
+            'instructions': '1. Patlıcanı boyuna kesiğini yapıp pürü çıkartınız.\n2. Soğan ve domates karışımı hazırlayınız.\n3. Zeytinyağla tavada pişirerek servis yapınız.',
+            'cook_time': 50,
+            'servings': 4,
+            'tags': ['Sebze', 'Klasik']
+        },
+        {
+            'title': 'Falafel',
+            'description': "Nohuttan yapılan Ortadoğu'dan gelen kızartılı topaklar",
+            'ingredients': ['Kuru nohut', 'Soğan', 'Sarımsak', 'Maydanoz', 'Un', 'Baharat karışımı'],
+            'instructions': '1. Nohutu ezmek için işleme alınız.\n2. Tüm malzemeleri karıştırıp top yapınız.\n3. Derin yağda kızartınız.',
+            'cook_time': 30,
+            'servings': 4,
+            'tags': ['Nohut', 'Hafif']
+        },
+        {
+            'title': 'Menemen',
+            'description': 'Sabah kahvaltısına ideal domates, soğan ve yumurta yemeği',
+            'ingredients': ['Yumurta', 'Domates', 'Soğan', 'Biber', 'Tereyağ', 'Tuz', 'Pul biber'],
+            'instructions': '1. Sebzeleri sıcak tereyağda kavurunuz.\n2. Yumurtaları çınlayıp karıştırınız.\n3. Hafif pişmiş durumda servis yapınız.',
+            'cook_time': 15,
+            'servings': 2,
+            'tags': ['Kahvaltı', 'Hafif']
+        },
+        {
+            'title': 'Karnıyarık',
+            'description': 'Patlıcan yarısına kıymalı dolgu konan ağır ve lezzetli yemek',
+            'ingredients': ['Patlıcan', 'Etli kıyma', 'Soğan', 'Domates', 'Maydanoz', 'Tereyağ', 'Tuz'],
+            'instructions': '1. Patlıcanlara uzun bir kesi yapınız.\n2. Etli soğan ve domate karışımını doldurunuz.\n3. Tereyağla pişiriniz.',
+            'cook_time': 45,
+            'servings': 4,
+            'tags': ['Et', 'Sebze']
+        },
+        {
+            'title': 'Humus',
+            'description': 'Haşlanmış nohuttan yapılan Ortadoğu mezesi',
+            'ingredients': ['Nohut', 'Tahin', 'Limon suyu', 'Sarımsak', 'Zeytinyağı', 'Tuz'],
+            'instructions': '1. Nohutu haşlayıp soğutunuz.\n2. Tahin, limon ve sarımsak ekleyerek püreleyin.\n3. Zeytinyağ damlatarak servis yapınız.',
+            'cook_time': 15,
+            'servings': 4,
+            'tags': ['Meze', 'Hafif']
+        },
+        {
+            'title': 'İçli Köfte',
+            'description': 'Bulgur kabuğunda kıymalı dolgu ihtiva eden geleneksel köfte',
+            'ingredients': ['Bulgur', 'Etli kıyma', 'Soğan', 'Karabıber', 'Tuz', 'Un'],
+            'instructions': '1. Bulgur ve kıyma hamurlarını hazırlayınız.\n2. İç dolgu için etli soğan karışımı yapınız.\n3. Derin yağda kızartınız.',
+            'cook_time': 35,
+            'servings': 4,
+            'tags': ['Et', 'Geleneksel']
+        },
+        {
+            'title': 'Şiş Kebap',
+            'description': 'Et parçalarının baharat ve soğanla marine edilip şişlerde pişirilmesi',
+            'ingredients': ['Et', 'Soğan', 'Domates', 'Biber', 'Tuz', 'Baharat'],
+            'instructions': '1. Etleri küpleyin ve baharat ile tutuşturunuz.\n2. Şişlere diziniz.\n3. Ateşte çevirerek pişiriniz.',
+            'cook_time': 25,
+            'servings': 4,
+            'tags': ['Kebap', 'Et']
+        },
+        {
+            'title': 'Tatlı Patates',
+            'description': 'Çeşitli baharatlarla pişirilen tatlı ve besleyici tatlı patates',
+            'ingredients': ['Tatlı patates', 'Şeker', 'Tarçın', 'Tereyağ', 'Tuz', 'Limon suyu'],
+            'instructions': '1. Tatlı patatesleri soyunuz ve doğrayınız.\n2. Tereyağ ve şeker ile pişiriniz.\n3. Tarçın serperek servis yapınız.',
+            'cook_time': 30,
+            'servings': 4,
+            'tags': ['Sebze', 'Tatlı']
+        },
+        {
+            'title': 'Manti',
+            'description': 'Hamura sarılı kıymalı pasta, yoğurt ve sos ile tamamlanır',
+            'ingredients': ['Un', 'Yumurta', 'Etli kıyma', 'Soğan', 'Yoğurt', 'Domates salçası', 'Tuz'],
+            'instructions': '1. Hamuru açıp kareler yapınız.\n2. Kıymalı dolgu ile doldurunuz.\n3. Haşlayıp yoğurt ve sosla servis yapınız.',
+            'cook_time': 60,
+            'servings': 4,
+            'tags': ['Zaman Alıcı', 'Et']
+        },
+        {
+            'title': 'Lula Kebap',
+            'description': "Bahsedilen kıymalı kebap, çoban salatası ve raki ile servis edilir",
+            'ingredients': ['Etli kıyma', 'Soğan', 'Pul biber', 'Maydanoz', 'Tuz', 'Baharat'],
+            'instructions': '1. Kıymayı baharatlarla yoğunlaştırınız.\n2. Uzun düz şişe sarınız.\n3. Ateşte çevirerek pişiriniz.',
+            'cook_time': 20,
+            'servings': 2,
+            'tags': ['Kebap', 'Et']
+        },
     ]
     
     # Create tags
