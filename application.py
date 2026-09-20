@@ -454,8 +454,10 @@ def register_routes(app):
         return render_template('500.html'), 500
 
 
+# Create app instance for Gunicorn
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
     app.run(
         host=app.config['HOST'],
         port=app.config['PORT'],
