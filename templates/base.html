@@ -311,12 +311,12 @@
     <script>
         // Malzemeleri kategorilere göre ayır
         const ingredientCategories = {
-            '🥬 Sebzeler': ['domates', 'biber', 'soğan', 'sarımsak', 'mısır', 'lahana', 'brokoli', 'havuç', 'patlıcan', 'kabak', 'patates', 'yaprak'],
-            '🍎 Meyveler': ['elma', 'muz', 'portakal', 'limon', 'çilek', 'üzüm', 'dut'],
-            '🥩 Protein & Et': ['tavuk', 'kırmızı et', 'balık', 'yumurta', 'sosyal et', 'karides'],
-            '🧀 Süt Ürünleri': ['peynir', 'süt', 'yoğurt', 'tereyağı', 'kaymak'],
-            '🌾 Baklagiller & Tahıl': ['nohut', 'lentil', 'fasulye', 'pirinç', 'bulgur', 'arpa', 'mısır unı'],
-            '🍯 Temel Gıdalar & Baharatlar': ['un', 'tuz', 'şeker', 'yağ', 'zeytinyağı', 'tereyağı', 'sirke', 'sos', 'baharat', 'kırmızı biber', 'karabiber', 'tarçın', 'maydanoz', 'dill', 'kişniş']
+            '🥬 Sebzeler': ['domates', 'biber', 'soğan', 'sarımsak', 'mısır', 'lahana', 'brokoli', 'havuç', 'patlıcan', 'kabak', 'patates', 'tatlı patates', 'yaprak', 'salatalık', 'marul'],
+            '🍎 Meyveler': ['elma', 'muz', 'portakal', 'limon', 'çilek', 'üzüm', 'dut', 'avokado'],
+            '🥩 Protein & Et': ['tavuk', 'kırmızı et', 'balık', 'yumurta', 'sosyal et', 'karides', 'kıyma', 'et'],
+            '🧀 Süt Ürünleri': ['peynir', 'süt', 'yoğurt', 'tereyağı', 'kaymak', 'tahin'],
+            '🌾 Baklagiller & Tahıl': ['nohut', 'lentil', 'fasulye', 'pirinç', 'bulgur', 'arpa', 'mısır unı', 'mercimek'],
+            '🍯 Temel Gıdalar & Baharatlar': ['un', 'tuz', 'şeker', 'yağ', 'zeytinyağı', 'tereyağı', 'sirke', 'sos', 'baharat', 'kırmızı biber', 'karabiber', 'tarçın', 'maydanoz', 'dill', 'kişniş', 'limon suyu', 'limon', 'maydanoz']
         };
         
         function categorizeIngredient(ingredient) {
@@ -327,6 +327,26 @@
                 }
             }
             return '📌 Diğer';
+        }
+        
+        function saveSelectedIngredients() {
+            const selected = Array.from(document.querySelectorAll('.fridge-ingredient-checkbox:checked'))
+                .map(cb => cb.value);
+            sessionStorage.setItem('selectedIngredients', JSON.stringify(selected));
+        }
+        
+        function restoreSelectedIngredients() {
+            const saved = sessionStorage.getItem('selectedIngredients');
+            if (saved) {
+                const ingredients = JSON.parse(saved);
+                ingredients.forEach(ingredient => {
+                    const checkbox = document.querySelector(`.fridge-ingredient-checkbox[value="${ingredient}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+                updateSelectedIngredientsPreview();
+            }
         }
         
         function initializeFridgeModal() {
@@ -458,6 +478,9 @@
         }
         
         function fridgeFilterRecipes() {
+            // Seçimleri kaydet
+            saveSelectedIngredients();
+            
             // Malzemeleri index.html deki checkbox'larına aktar
             const fridgeCheckboxes = document.querySelectorAll('.fridge-ingredient-checkbox:checked');
             const indexCheckboxes = document.querySelectorAll('.ingredient-checkbox');
@@ -485,11 +508,15 @@
             }, 100);
         }
         
-        // Modal açılırken kategorileri başlat
+        // Modal açılırken kategorileri başlat ve seçimleri restore et
         document.getElementById('fridgeModal').addEventListener('show.bs.modal', function() {
             if (document.getElementById('fridgeIngredientsCategories').children.length === 0) {
                 initializeFridgeModal();
             }
+            // Kaydedilmiş seçimleri geri yükle
+            setTimeout(() => {
+                restoreSelectedIngredients();
+            }, 100);
         });
     </script>
     
