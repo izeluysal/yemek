@@ -32,7 +32,7 @@ services:
       retries: 3
       start_period: 40s
     ports:
-      - "5003:50033"
+      - "5003:5003"
     networks:
       - nginx
     expose:
