@@ -257,6 +257,21 @@ def create_app():
     # Register routes
     register_routes(app)
     
+    # Context processor - make all_ingredients available in all templates
+    @app.context_processor
+    def inject_all_ingredients():
+        all_ingredients_set = set()
+        recipes_list = Recipe.query.all()
+        for recipe in recipes_list:
+            if recipe.ingredients:
+                if isinstance(recipe.ingredients, list):
+                    ingredients_list = recipe.ingredients
+                else:
+                    ingredients_list = [ing.strip() for ing in recipe.ingredients.replace('\n', ',').split(',')]
+                all_ingredients_set.update([ing.strip() for ing in ingredients_list if ing])
+        all_ingredients = sorted(list(all_ingredients_set))
+        return {'all_ingredients': all_ingredients}
+    
     return app
 
 
