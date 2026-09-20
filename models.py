@@ -88,6 +88,28 @@ class Recipe(db.Model):
         # Use Turkish cuisine/food image from Unsplash
         # Turkish cooking pot and traditional food
         return 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600&q=80'
+    
+    def get_image_url(self):
+        """Get image URL - prefer custom URL, or use category-specific default"""
+        # If recipe has a custom image URL, use it
+        if self.image_url:
+            return self.image_url
+        
+        # Otherwise, get category-specific image based on primary tag
+        category_images = {
+            'Çorbalar': 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=600&q=80',  # Lentil soup
+            'Kahvaltı': 'https://images.unsplash.com/photo-1533193566920-8dd03ffd7850?auto=format&fit=crop&w=600&q=80',  # Breakfast/scrambled eggs
+            'Zeytinyağlılar': 'https://images.unsplash.com/photo-1505521585350-cb5ee113f50c?auto=format&fit=crop&w=600&q=80',  # Stuffed peppers
+        }
+        
+        # Check if recipe has tags and get primary tag
+        if self.tags.count() > 0:
+            primary_tag = self.tags.first().name
+            if primary_tag in category_images:
+                return category_images[primary_tag]
+        
+        # Fallback to default image
+        return self.generate_image_url(self.title)
 
 
 class Tag(db.Model):

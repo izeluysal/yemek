@@ -114,6 +114,14 @@
     const tagContainer = document.getElementById('tagChartContainer');
     
     if (tagCtx && tagData && tagData.labels && tagData.labels.length > 0) {
+        // Modern color palette for donut chart (Emerald, Coral, Amber, Indigo, Pink, Purple, Cyan, Lime)
+        const modernColors = ['#10b981', '#f97316', '#f59e0b', '#6366f1', '#ec4899', '#8b5cf6', '#06b6d4', '#84cc16'];
+        
+        // Update chart data with modern colors
+        tagData.datasets[0].backgroundColor = modernColors.slice(0, tagData.labels.length);
+        tagData.datasets[0].borderColor = '#ffffff';
+        tagData.datasets[0].borderWidth = 2;
+        
         new Chart(tagCtx, {
             type: 'doughnut',
             data: tagData,
@@ -124,11 +132,14 @@
                     legend: {
                         position: 'bottom',
                         labels: {
-                            color: '#1e293b',
+                            color: '#334155',
                             font: {
-                                size: 11
+                                size: 11,
+                                weight: 600
                             },
-                            padding: 12
+                            padding: 15,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
                         }
                     }
                 }
@@ -138,16 +149,62 @@
         // Eğer veri yoksa şık bir mesaj göster
         tagContainer.innerHTML = '<div style="text-align: center; color: #9ca3af; font-size: 0.9rem;">Henüz kategori verisi yok</div>';
     }
+    
+    // Live filtering function
+    window.filterRecipes = function(category, button) {
+        const recipeItems = document.querySelectorAll('.recipe-item');
+        const filterButtons = document.querySelectorAll('.badge-tag[data-filter]');
+        
+        // Update button styles
+        filterButtons.forEach(btn => {
+            if (btn.dataset.filter === category) {
+                btn.style.backgroundColor = '#10b981';
+                btn.style.color = 'white';
+                btn.style.fontWeight = '600';
+            } else {
+                btn.style.backgroundColor = '#e2e8f0';
+                btn.style.color = '#1e293b';
+                btn.style.fontWeight = '400';
+            }
+        });
+        
+        // Filter recipes with animation
+        recipeItems.forEach(item => {
+            const tags = item.dataset.tags ? item.dataset.tags.split(',').map(t => t.trim()).filter(t => t !== '') : [];
+            const shouldShow = category === 'all' || tags.includes(category);
+            
+            if (shouldShow) {
+                item.style.display = 'block';
+                item.style.animation = 'fadeIn 0.3s ease';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    };
+    
+    // Add fade-in animation style
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .recipe-item {
+            transition: all 0.3s ease;
+        }
+    `;
+    document.head.appendChild(styleSheet);
 </script>
 {% endif %}
 
-<!-- Featured Tags -->
+<!-- Featured Tags with Live Filtering -->
 {% if tags %}
 <div class="mb-3" style="max-width: 1100px; margin: 0 auto; padding: 0 1rem; margin-bottom: 0.75rem;">
     <h5 class="mb-3" style="font-weight: 600; font-size: 1.1rem; color: #1e293b;">Popüler Etiketler</h5>
     <div>
+        <button class="badge badge-tag" data-filter="all" onclick="filterRecipes('all', this);" style="margin-right: 8px; margin-bottom: 8px; padding: 8px 12px; font-size: 0.9rem; background-color: #10b981; color: white; text-decoration: none; border: none; cursor: pointer; font-weight: 600; border-radius: 4px;">Tümü</button>
         {% for tag in tags[:10] %}
-            <a href="{{ url_for('search', tags=[tag.id]) }}" class="badge badge-tag" style="margin-right: 8px; margin-bottom: 8px; padding: 8px 12px; font-size: 0.9rem; background-color: #e2e8f0; color: #1e293b; text-decoration: none;">{{ tag.name }}</a>
+            <button class="badge badge-tag" data-filter="{{ tag.name }}" onclick="filterRecipes('{{ tag.name }}', this);" style="margin-right: 8px; margin-bottom: 8px; padding: 8px 12px; font-size: 0.9rem; background-color: #e2e8f0; color: #1e293b; text-decoration: none; border: none; cursor: pointer; transition: all 0.3s ease; border-radius: 4px;">{{ tag.name }}</button>
         {% endfor %}
     </div>
 </div>
@@ -158,16 +215,16 @@
     {% if recipes.items %}
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px;">
             {% for recipe in recipes.items %}
-            <div>
+            <div class="recipe-item" data-tags="{% for tag in recipe.tags %}{{ tag.name }}{% if not loop.last %},{% endif %}{% endfor %}">
                 <div class="card recipe-card h-100" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; overflow: hidden; border: none;">
                     <div style="position: relative; overflow: hidden;">
-                        <img src="{{ recipe.image_url if recipe.image_url else 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80' }}" 
+                        <img src="{{ recipe.get_image_url() }}" 
                              alt="{{ recipe.title }}" 
                              class="card-img-top"
                              onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=600&q=80';"
                              style="height: 220px; object-fit: cover; width: 100%; transition: transform 0.3s ease;">
                     </div>
-                    <div class="card-body d-flex flex-column" style="flex-grow: 1;">
+                    <div class="card-body d-flex flex-column" style="flex-grow: 1; min-height: 250px;">
                         <h5 class="card-title" style="text-transform: capitalize; font-weight: 600; margin-bottom: 0.75rem; line-height: 1.4;">{{ recipe.title }}</h5>
                         <p class="card-text text-muted small" style="flex-grow: 1; margin-bottom: 1rem; line-height: 1.5;">{{ recipe.description[:100] }}{% if recipe.description and recipe.description|length > 100 %}...{% endif %}</p>
                         
