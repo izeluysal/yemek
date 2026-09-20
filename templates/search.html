@@ -3,91 +3,128 @@
 {% block title %}Arama - Yemek Tarifi Defteri{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-lg-12">
-        <h1 class="mb-4">Tarif Ara</h1>
+<div style="max-width: 1000px; margin: 0 auto;">
+    <h1 class="mb-4" style="font-size: 2rem; font-weight: 700;">Tarif Ara</h1>
+    
+    <!-- Search Form -->
+    <form method="get" action="{{ url_for('search') }}" class="card p-4 mb-5" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+        <div class="row g-3">
+            <div class="col-md-8">
+                <input type="text" name="q" class="form-control" placeholder="Tarif adı, malzeme vb. ara..." value="{{ query }}" style="font-size: 1rem; padding: 12px 16px; border-radius: 8px;">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100" style="font-weight: 600; padding: 12px 16px; border-radius: 8px;">🔍 Ara</button>
+            </div>
+        </div>
         
-        <!-- Search Form -->
-        <form method="get" action="{{ url_for('search') }}" class="card p-4 mb-4">
-            <div class="row g-3">
-                <div class="col-md-8">
-                    <input type="text" name="q" class="form-control form-control-lg" placeholder="Tarif adı, malzeme vb. ara..." value="{{ query }}">
-                </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary btn-lg w-100">🔍 Ara</button>
+        <!-- Tag Filter -->
+        {% if tags %}
+            <div class="mt-4">
+                <label class="form-label" style="font-weight: 600; margin-bottom: 12px;">Etiket ile Filtrele:</label>
+                <div>
+                    {% for tag in tags %}
+                        <div class="form-check form-check-inline" style="margin-right: 16px; margin-bottom: 8px;">
+                            <input class="form-check-input" type="checkbox" name="tags" value="{{ tag.id }}" id="tag-{{ tag.id }}" 
+                                {% if tag.id in selected_tags %}checked{% endif %}>
+                            <label class="form-check-label" for="tag-{{ tag.id }}">
+                                {{ tag.name }}
+                            </label>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
-            
-            <!-- Tag Filter -->
-            {% if tags %}
-                <div class="mt-3">
-                    <label class="form-label"><strong>Etiket ile Filtrele:</strong></label>
-                    <div>
-                        {% for tag in tags %}
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="tags" value="{{ tag.id }}" id="tag-{{ tag.id }}" 
-                                    {% if tag.id in selected_tags %}checked{% endif %}>
-                                <label class="form-check-label" for="tag-{{ tag.id }}">
-                                    {{ tag.name }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-        </form>
-    </div>
+        {% endif %}
+    </form>
 </div>
 
 <!-- Search Results -->
-<div class="row">
+<div style="max-width: 1200px; margin: 0 auto;">
     {% if recipes.items %}
-        <div class="col-12 mb-4">
-            <p class="text-muted">
+        <div class="mb-4">
+            <p class="text-muted" style="font-size: 1rem;">
                 <strong>{{ recipes.total }}</strong> tarif bulundu
                 {% if query %}<em>"{{ query }}"</em>{% endif %}
             </p>
         </div>
         
-        {% for recipe in recipes.items %}
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card recipe-card h-100">
-                <img src="{{ recipe.image_url if recipe.image_url else 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80' }}" 
-                     alt="{{ recipe.title }}" 
-                     class="card-img-top recipe-image"
-                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=600&q=80';"
-                     style="height: 200px; object-fit: cover; width: 100%;">
-                <div class="card-body">
-                    <h5 class="card-title">{{ recipe.title }}</h5>
-                    <p class="card-text text-muted small">{{ recipe.description[:100] }}{% if recipe.description and recipe.description|length > 100 %}...{% endif %}</p>
-                    
-                    <!-- Time badges -->
-                    <div class="mb-2">
-                        {% if recipe.prep_time %}
-                            <span class="badge bg-light text-dark">⏱️ {{ recipe.prep_time }} dk</span>
-                        {% endif %}
-                        {% if recipe.cook_time %}
-                            <span class="badge bg-light text-dark">🔥 {{ recipe.cook_time }} dk</span>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Tags -->
-                    {% if recipe.tags %}
-                        <div class="mb-3">
-                            {% for tag in recipe.tags %}
-                                <a href="{{ url_for('search', tags=[tag.id]) }}" class="badge bg-secondary badge-tag">{{ tag.name }}</a>
-                            {% endfor %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px;">
+            {% for recipe in recipes.items %}
+            <div>
+                <div class="card recipe-card h-100" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; overflow: hidden; border: none;">
+                    <img src="{{ recipe.image_url if recipe.image_url else 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80' }}" 
+                         alt="{{ recipe.title }}" 
+                         class="card-img-top"
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=600&q=80';"
+                         style="height: 220px; object-fit: cover; width: 100%;">
+                    <div class="card-body d-flex flex-column" style="flex-grow: 1;">
+                        <h5 class="card-title" style="text-transform: capitalize; font-weight: 600; margin-bottom: 0.75rem; line-height: 1.4;">{{ recipe.title }}</h5>
+                        <p class="card-text text-muted small" style="flex-grow: 1; margin-bottom: 1rem; line-height: 1.5;">{{ recipe.description[:100] }}{% if recipe.description and recipe.description|length > 100 %}...{% endif %}</p>
+                        
+                        <!-- Time badges -->
+                        {% if recipe.prep_time or recipe.cook_time %}
+                        <div class="mb-3" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            {% if recipe.prep_time %}
+                                <span class="badge bg-light text-dark" style="font-size: 0.85rem; padding: 6px 10px;">⏱️ {{ recipe.prep_time }} dk</span>
+                            {% endif %}
+                            {% if recipe.cook_time %}
+                                <span class="badge bg-light text-dark" style="font-size: 0.85rem; padding: 6px 10px;">🔥 {{ recipe.cook_time }} dk</span>
+                            {% endif %}
                         </div>
-                    {% endif %}
-                    
-                    <a href="{{ url_for('recipe_detail', slug=recipe.slug) }}" class="btn btn-primary btn-sm">Tarifi Oku</a>
+                        {% endif %}
+                        
+                        <!-- Tags -->
+                        {% if recipe.tags %}
+                            <div class="mb-3" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                {% for tag in recipe.tags %}
+                                    <a href="{{ url_for('search', tags=[tag.id]) }}" class="badge bg-secondary badge-tag" style="font-size: 0.8rem; padding: 4px 8px;">{{ tag.name }}</a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <a href="{{ url_for('recipe_detail', slug=recipe.slug) }}" class="btn btn-primary w-100" style="font-weight: 600; padding: 10px 16px; border-radius: 6px;">Tarifi Oku</a>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        
+        <!-- Pagination -->
+        {% if recipes.pages > 1 %}
+        <div style="max-width: 1200px; margin: 40px auto 0;">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if recipes.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('search', q=query, page=recipes.prev_num, tags=selected_tags) }}" style="border-radius: 6px;">Önceki</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in recipes.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num == recipes.page %}
+                                <li class="page-item active">
+                                    <span class="page-link" style="border-radius: 6px;">{{ page_num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('search', q=query, page=page_num, tags=selected_tags) }}" style="border-radius: 6px;">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if recipes.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('search', q=query, page=recipes.next_num, tags=selected_tags) }}" style="border-radius: 6px;">Sonraki</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
     {% else %}
-        <div class="col-12">
-            <div class="alert alert-warning text-center" role="alert">
+        <div style="text-align: center; padding: 40px;">
+            <div class="alert alert-warning" role="alert" style="display: inline-block;">
                 <h4>Sonuç Bulunamadı</h4>
                 <p>
                     {% if query %}
@@ -101,37 +138,4 @@
         </div>
     {% endif %}
 </div>
-
-<!-- Pagination -->
-{% if recipes.pages > 1 %}
-<nav aria-label="Page navigation" class="mt-4">
-    <ul class="pagination justify-content-center">
-        {% if recipes.has_prev %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for('search', q=query, page=recipes.prev_num, tags=selected_tags) }}">Önceki</a>
-            </li>
-        {% endif %}
-        
-        {% for page_num in recipes.iter_pages() %}
-            {% if page_num %}
-                {% if page_num == recipes.page %}
-                    <li class="page-item active">
-                        <span class="page-link">{{ page_num }}</span>
-                    </li>
-                {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('search', q=query, page=page_num, tags=selected_tags) }}">{{ page_num }}</a>
-                    </li>
-                {% endif %}
-            {% endif %}
-        {% endfor %}
-        
-        {% if recipes.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for('search', q=query, page=recipes.next_num, tags=selected_tags) }}">Sonraki</a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
-{% endif %}
 {% endblock %}

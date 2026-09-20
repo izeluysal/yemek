@@ -3,83 +3,86 @@
 {% block title %}Anasayfa - Yemek Tarifi Defteri{% endblock %}
 
 {% block content %}
-<div class="row mb-5">
-    <div class="col-lg-12">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <h1 class="card-title mb-3">🍴 Yemek Tarifi Defteri</h1>
-                <p class="card-text mb-0">Leziz ve kolay tarifler bulun, favorilerinizi keşfedin</p>
-            </div>
+<!-- Hero Section -->
+<div class="mb-5">
+    <div class="card bg-primary text-white" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+        <div class="card-body py-5">
+            <h1 class="card-title mb-3" style="font-size: 2.5rem; font-weight: 700;">🍴 Yemek Tarifi Defteri</h1>
+            <p class="card-text mb-0" style="font-size: 1.1rem;">Leziz ve kolay tarifler bulun, favorilerinizi keşfedin</p>
         </div>
     </div>
 </div>
 
 <!-- Search Bar -->
-<div class="row mb-4">
-    <div class="col-lg-8 mx-auto">
-        <form method="get" action="{{ url_for('search') }}" class="d-flex gap-2">
-            <input type="text" name="q" class="form-control form-control-lg" placeholder="Tarif ara..." value="">
-            <button type="submit" class="btn btn-primary btn-lg">Ara</button>
+<div class="mb-5">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <form method="get" action="{{ url_for('search') }}" class="d-flex gap-3">
+            <input type="text" name="q" class="form-control" placeholder="Tarif ara..." value="" style="font-size: 1.1rem; padding: 14px 16px; border-radius: 8px; border: 2px solid #e0e0e0;">
+            <button type="submit" class="btn btn-primary btn-lg px-5" style="white-space: nowrap; font-weight: 600; border-radius: 8px;">Ara</button>
         </form>
     </div>
 </div>
 
 <!-- Featured Tags -->
 {% if tags %}
-<div class="row mb-4">
-    <div class="col-lg-12">
-        <h5 class="mb-3">Popüler Etiketler</h5>
-        <div>
-            {% for tag in tags[:10] %}
-                <a href="{{ url_for('search', tags=[tag.id]) }}" class="badge bg-secondary badge-tag">{{ tag.name }}</a>
-            {% endfor %}
-        </div>
+<div class="mb-5" style="max-width: 1000px; margin: 0 auto;">
+    <h5 class="mb-3" style="font-weight: 600; font-size: 1.1rem;">Popüler Etiketler</h5>
+    <div>
+        {% for tag in tags[:10] %}
+            <a href="{{ url_for('search', tags=[tag.id]) }}" class="badge bg-secondary badge-tag" style="margin-right: 8px; margin-bottom: 8px; padding: 8px 12px; font-size: 0.9rem;">{{ tag.name }}</a>
+        {% endfor %}
     </div>
 </div>
 {% endif %}
 
 <!-- Recipes Grid -->
-<div class="row">
+<div style="max-width: 1200px; margin: 0 auto;">
     {% if recipes.items %}
-        {% for recipe in recipes.items %}
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card recipe-card h-100">
-                <img src="{{ recipe.image_url if recipe.image_url else 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80' }}" 
-                     alt="{{ recipe.title }}" 
-                     class="card-img-top recipe-image"
-                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=600&q=80';"
-                     style="height: 200px; object-fit: cover; width: 100%;">
-                <div class="card-body">
-                    <h5 class="card-title">{{ recipe.title }}</h5>
-                    <p class="card-text text-muted small">{{ recipe.description[:100] }}{% if recipe.description and recipe.description|length > 100 %}...{% endif %}</p>
-                    
-                    <!-- Time badges -->
-                    <div class="mb-2">
-                        {% if recipe.prep_time %}
-                            <span class="badge bg-light text-dark">⏱️ {{ recipe.prep_time }} dk</span>
-                        {% endif %}
-                        {% if recipe.cook_time %}
-                            <span class="badge bg-light text-dark">🔥 {{ recipe.cook_time }} dk</span>
-                        {% endif %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px;">
+            {% for recipe in recipes.items %}
+            <div>
+                <div class="card recipe-card h-100" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; overflow: hidden; border: none;">
+                    <div style="position: relative; overflow: hidden;">
+                        <img src="{{ recipe.image_url if recipe.image_url else 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80' }}" 
+                             alt="{{ recipe.title }}" 
+                             class="card-img-top"
+                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=600&q=80';"
+                             style="height: 220px; object-fit: cover; width: 100%; transition: transform 0.3s ease;">
                     </div>
-                    
-                    <!-- Tags -->
-                    {% if recipe.tags %}
-                        <div class="mb-3">
-                            {% for tag in recipe.tags %}
-                                <a href="{{ url_for('search', tags=[tag.id]) }}" class="badge bg-secondary badge-tag">{{ tag.name }}</a>
-                            {% endfor %}
+                    <div class="card-body d-flex flex-column" style="flex-grow: 1;">
+                        <h5 class="card-title" style="text-transform: capitalize; font-weight: 600; margin-bottom: 0.75rem; line-height: 1.4;">{{ recipe.title }}</h5>
+                        <p class="card-text text-muted small" style="flex-grow: 1; margin-bottom: 1rem; line-height: 1.5;">{{ recipe.description[:100] }}{% if recipe.description and recipe.description|length > 100 %}...{% endif %}</p>
+                        
+                        <!-- Time badges -->
+                        {% if recipe.prep_time or recipe.cook_time %}
+                        <div class="mb-3" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            {% if recipe.prep_time %}
+                                <span class="badge bg-light text-dark" style="font-size: 0.85rem; padding: 6px 10px;">⏱️ {{ recipe.prep_time }} dk</span>
+                            {% endif %}
+                            {% if recipe.cook_time %}
+                                <span class="badge bg-light text-dark" style="font-size: 0.85rem; padding: 6px 10px;">🔥 {{ recipe.cook_time }} dk</span>
+                            {% endif %}
                         </div>
-                    {% endif %}
-                    
-                    <a href="{{ url_for('recipe_detail', slug=recipe.slug) }}" class="btn btn-primary btn-sm">Tarifi Oku</a>
+                        {% endif %}
+                        
+                        <!-- Tags -->
+                        {% if recipe.tags %}
+                            <div class="mb-3" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                {% for tag in recipe.tags %}
+                                    <a href="{{ url_for('search', tags=[tag.id]) }}" class="badge bg-secondary badge-tag" style="font-size: 0.8rem; padding: 4px 8px;">{{ tag.name }}</a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <a href="{{ url_for('recipe_detail', slug=recipe.slug) }}" class="btn btn-primary w-100" style="font-weight: 600; padding: 10px 16px; border-radius: 6px;">Tarifi Oku</a>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     {% else %}
-        <div class="col-12">
-            <div class="alert alert-info text-center" role="alert">
+        <div style="text-align: center; padding: 40px;">
+            <div class="alert alert-info" role="alert">
                 <h4>Henüz tarif eklenmemiş</h4>
                 <p>Admin panelinden ilk tarifini ekle!</p>
             </div>
@@ -89,34 +92,36 @@
 
 <!-- Pagination -->
 {% if recipes.pages > 1 %}
-<nav aria-label="Page navigation" class="mt-4">
-    <ul class="pagination justify-content-center">
-        {% if recipes.has_prev %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for('index', page=recipes.prev_num) }}">Önceki</a>
-            </li>
-        {% endif %}
-        
-        {% for page_num in recipes.iter_pages() %}
-            {% if page_num %}
-                {% if page_num == recipes.page %}
-                    <li class="page-item active">
-                        <span class="page-link">{{ page_num }}</span>
-                    </li>
-                {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('index', page=page_num) }}">{{ page_num }}</a>
-                    </li>
-                {% endif %}
+<div style="max-width: 1200px; margin: 40px auto 0;">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if recipes.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('index', page=recipes.prev_num) }}" style="border-radius: 6px;">Önceki</a>
+                </li>
             {% endif %}
-        {% endfor %}
-        
-        {% if recipes.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for('index', page=recipes.next_num) }}">Sonraki</a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
+            
+            {% for page_num in recipes.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num == recipes.page %}
+                        <li class="page-item active">
+                            <span class="page-link" style="border-radius: 6px;">{{ page_num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('index', page=page_num) }}" style="border-radius: 6px;">{{ page_num }}</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            
+            {% if recipes.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('index', page=recipes.next_num) }}" style="border-radius: 6px;">Sonraki</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
 {% endif %}
 {% endblock %}

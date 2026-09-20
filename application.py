@@ -163,7 +163,9 @@ def register_routes(app):
     def admin_new_recipe():
         """Add new recipe"""
         if request.method == 'POST':
-            title = request.form.get('title', '').strip()
+            # Normalize title to proper case (capitalize each word)
+            title_input = request.form.get('title', '').strip()
+            title = ' '.join(word.capitalize() for word in title_input.split())
             description = request.form.get('description', '').strip()
             ingredients_text = request.form.get('ingredients', '')
             instructions = request.form.get('instructions', '').strip()
@@ -230,7 +232,9 @@ def register_routes(app):
         recipe = Recipe.query.get_or_404(recipe_id)
         
         if request.method == 'POST':
-            recipe.title = request.form.get('title', '').strip()
+            # Normalize title to proper case (capitalize each word)
+            title_input = request.form.get('title', '').strip()
+            recipe.title = ' '.join(word.capitalize() for word in title_input.split())
             recipe.description = request.form.get('description', '').strip()
             
             ingredients_text = request.form.get('ingredients', '')

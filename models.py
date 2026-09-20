@@ -44,6 +44,10 @@ class Recipe(db.Model):
     def __repr__(self):
         return f'<Recipe {self.title}>'
     
+    def get_formatted_title(self):
+        """Return title with proper case (each word capitalized)"""
+        return ' '.join(word.capitalize() for word in self.title.split())
+    
     def to_dict(self):
         """Convert recipe to dictionary"""
         return {
