@@ -39,11 +39,11 @@
   }
 </style>
 <!-- Hero Section -->
-<div class="mb-3">
-    <div class="card text-white" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
-        <div class="card-body py-4 py-md-5">
-            <h1 class="card-title mb-3" style="font-size: clamp(1.5rem, 5vw, 2.5rem); font-weight: 700;">🍴 Yemek Tarifi Defteri</h1>
-            <p class="card-text mb-0" style="font-size: clamp(0.9rem, 4vw, 1.1rem);">Leziz ve kolay tarifler bulun, favorilerinizi keşfedin</p>
+<div class="mb-4" style="margin-bottom: 2rem;">
+    <div class="card text-white" style="border-radius: 16px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
+        <div class="card-body" style="padding: 2.5rem 2rem;">
+            <h1 class="card-title mb-2" style="font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; color: #ffffff; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);">🍴 Yemek Tarifi Defteri</h1>
+            <p class="card-text mb-0" style="font-size: clamp(0.95rem, 4vw, 1.15rem); color: #cbd5e1; font-weight: 500;">Leziz ve kolay tarifler bulun, favorilerinizi keşfedin</p>
         </div>
     </div>
 </div>
@@ -57,28 +57,24 @@
             <button type="submit" class="btn btn-primary px-3 px-sm-5" style="font-weight: 600; border-radius: 8px; white-space: nowrap;">Ara</button>
         </form>
         
-        <!-- Ingredient Filter Dropdown -->
-        <div style="max-width: 800px; margin: 1rem auto 0; padding: 0 1rem;">
-            <div class="card" style="border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc;">
-                <div class="card-header" style="background: #f1f5f9; cursor: pointer; border-bottom: 1px solid #e2e8f0;" onclick="toggleIngredientFilter()">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0" style="font-weight: 600; color: #1e293b; font-size: 0.95rem;">🥘 Dolapta Ne Var?</h6>
-                        <span id="filter-toggle-icon" style="font-size: 1.2rem; transition: transform 0.3s;">▼</span>
-                    </div>
-                </div>
-                <div id="ingredient-filter-content" style="display: none; padding: 1rem; border-top: 1px solid #e2e8f0;">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; max-height: 300px; overflow-y: auto;">
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='transparent'">
-                            <input type="checkbox" id="ingredient-all" onchange="toggleAllIngredients()" style="cursor: pointer;">
-                            <span style="color: #1e293b; font-weight: 600; font-size: 0.9rem;">Tüm Malzemeler</span>
+<!-- Ingredient Filter Dropdown -->
+        <div style="margin: 1rem auto 0; padding: 0;">
+            <div style="border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+                <div style="padding: 1.5rem;">
+                    <h6 style="margin-bottom: 1rem; font-weight: 700; color: #0f172a; font-size: 1.1rem;">🥘 Dolapta Ne Var?</h6>
+                    
+                    <div id="ingredientContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.5rem;">
+                        {% for ingredient in all_ingredients %}
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; border-radius: 8px; background: white; border: 1px solid #cbd5e1; transition: all 0.2s ease;" class="ingredient-label" onmouseover="this.style.backgroundColor='#e2e8f0'" onmouseout="this.style.backgroundColor='white'">
+                            <input type="checkbox" class="ingredient-checkbox" value="{{ ingredient }}" style="cursor: pointer; width: 16px; height: 16px;">
+                            <span style="color: #1e293b; font-size: 0.9rem; font-weight: 500; text-transform: capitalize;">{{ ingredient }}</span>
                         </label>
-                        <div id="ingredient-list" style="grid-column: 1/-1;">
-                            <!-- Ingredients will be populated by JavaScript -->
-                        </div>
+                        {% endfor %}
                     </div>
-                    <div style="margin-top: 1rem; display: flex; gap: 8px;">
-                        <button type="button" onclick="filterByIngredients()" class="btn btn-sm btn-primary" style="background: #10b981; border: none; font-weight: 600; border-radius: 6px;">Filtrele</button>
-                        <button type="button" onclick="clearIngredientFilter()" class="btn btn-sm btn-outline-secondary" style="border-radius: 6px; color: #475569;">Temizle</button>
+                    
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button type="button" id="filterBtn" style="padding: 12px 24px; background-color: #059669; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: background-color 0.2s; box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);" onmouseover="this.style.backgroundColor='#047857'" onmouseout="this.style.backgroundColor='#059669'" onclick="filterByIngredientsBackend()">Filtrele</button>
+                        <button type="button" id="clearBtn" style="padding: 12px 24px; background-color: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#cbd5e1'" onmouseout="this.style.backgroundColor='#e2e8f0'" onclick="clearIngredientFilterBackend()">Temizle</button>
                     </div>
                 </div>
             </div>
@@ -280,105 +276,54 @@
     `;
     document.head.appendChild(styleSheet);
     
-    // Initialize ingredient filter
-    initializeIngredientFilter();
-</script>
-
-<script>
-    // All available ingredients extracted from recipes
-    const allIngredientsSet = new Set();
-    const recipeIngredientsMap = new Map();
-    
-    // Extract ingredients from all recipes
-    function initializeIngredientFilter() {
-        const recipeItems = document.querySelectorAll('.recipe-item');
-        recipeItems.forEach((item, idx) => {
-            const ingredientsStr = item.dataset.ingredients || '';
-            if (ingredientsStr) {
-                const ingredients = JSON.parse(ingredientsStr);
-                recipeIngredientsMap.set(idx, ingredients);
-                ingredients.forEach(ing => {
-                    // Extract the main ingredient name (before quantity)
-                    const mainIng = ing.split(/[\d\s()]/)[0].trim().toLowerCase();
-                    if (mainIng) allIngredientsSet.add(mainIng);
-                });
-            }
-        });
-        
-        // Populate ingredient list dynamically
-        populateIngredientList();
-    }
-    
-    function populateIngredientList() {
-        const ingredientList = document.getElementById('ingredient-list');
-        if (!ingredientList || allIngredientsSet.size === 0) return;
-        
-        const sortedIngredients = Array.from(allIngredientsSet).sort();
-        let html = '';
-        sortedIngredients.forEach(ing => {
-            html += `
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; border-radius: 6px; grid-column: span 1; transition: background 0.2s;" 
-                       onmouseover="this.style.background='#e2e8f0'" 
-                       onmouseout="this.style.background='transparent'">
-                    <input type="checkbox" class="ingredient-checkbox" value="${ing}" style="cursor: pointer;">
-                    <span style="color: #475569; font-size: 0.9rem; text-transform: capitalize;">${ing}</span>
-                </label>
-            `;
-        });
-        ingredientList.innerHTML = html;
-    }
-    
-    function toggleIngredientFilter() {
-        const content = document.getElementById('ingredient-filter-content');
-        const icon = document.getElementById('filter-toggle-icon');
-        const isOpen = content.style.display === 'block';
-        content.style.display = isOpen ? 'none' : 'block';
-        icon.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
-    }
-    
-    function toggleAllIngredients() {
-        const checkboxes = document.querySelectorAll('.ingredient-checkbox');
-        const allCheckbox = document.getElementById('ingredient-all');
-        checkboxes.forEach(cb => cb.checked = allCheckbox.checked);
-    }
-    
-    function filterByIngredients() {
+    // Ingredient Filter Functions
+    function filterByIngredientsBackend() {
         const selectedIngredients = Array.from(document.querySelectorAll('.ingredient-checkbox:checked'))
-            .map(cb => cb.value.toLowerCase());
+            .map(cb => cb.value.toLowerCase().trim());
         
         if (selectedIngredients.length === 0) {
-            clearIngredientFilter();
+            clearIngredientFilterBackend();
             return;
         }
         
         const recipeItems = document.querySelectorAll('.recipe-item');
-        recipeItems.forEach((item, idx) => {
-            const ingredients = recipeIngredientsMap.get(idx) || [];
-            const hasAllIngredients = selectedIngredients.every(selected =>
-                ingredients.some(ing => ing.toLowerCase().includes(selected))
-            );
+        recipeItems.forEach((item) => {
+            const ingredientsStr = item.dataset.ingredients || '';
+            if (!ingredientsStr) {
+                item.style.display = 'none';
+                return;
+            }
             
-            if (hasAllIngredients) {
-                item.style.display = 'block';
-                item.style.animation = 'fadeIn 0.3s ease';
-            } else {
+            try {
+                const ingredients = JSON.parse(ingredientsStr);
+                const ingredientTexts = ingredients.map(ing => ing.toLowerCase());
+                
+                // Check if recipe contains ALL selected ingredients
+                const hasAllSelected = selectedIngredients.every(selected =>
+                    ingredientTexts.some(ing => ing.includes(selected))
+                );
+                
+                if (hasAllSelected) {
+                    item.style.display = 'block';
+                    item.style.animation = 'fadeIn 0.3s ease';
+                } else {
+                    item.style.display = 'none';
+                }
+            } catch (e) {
                 item.style.display = 'none';
             }
         });
     }
     
-    function clearIngredientFilter() {
+    function clearIngredientFilterBackend() {
         document.querySelectorAll('.ingredient-checkbox').forEach(cb => cb.checked = false);
-        document.getElementById('ingredient-all').checked = false;
         document.querySelectorAll('.recipe-item').forEach(item => {
             item.style.display = 'block';
+            item.style.animation = '';
         });
     }
-    
-    function filterRecipesByIngredientsLive() {
-        // Will be used for live search integration
-    }
 </script>
+
 {% endif %}
 
 <!-- Featured Tags with Live Filtering -->

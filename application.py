@@ -116,6 +116,16 @@ def register_routes(app):
             }]
         })
         
+        # Extract unique ingredients from all recipes
+        all_ingredients_set = set()
+        for recipe in recipes_list:
+            if recipe.ingredients:
+                # Split by comma or newline, strip whitespace
+                ingredients = [ing.strip() for ing in recipe.ingredients.replace('\n', ',').split(',')]
+                all_ingredients_set.update([ing for ing in ingredients if ing])
+        
+        all_ingredients = sorted(list(all_ingredients_set))
+        
         return render_template(
             'index.html', 
             recipes=recipes, 
@@ -124,7 +134,8 @@ def register_routes(app):
             total_comments=total_comments,
             avg_cook_time=avg_cook_time,
             time_chart_data=time_chart_data,
-            tag_chart_data=tag_chart_data
+            tag_chart_data=tag_chart_data,
+            all_ingredients=all_ingredients
         )
     
     @app.route('/search')
