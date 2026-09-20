@@ -42,7 +42,7 @@ data/app.db-wal
 data/app.db-shm
 
 # Uploads
-uploads/
+yemekfiles/
 
 # Flask
 instance/

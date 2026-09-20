@@ -20,7 +20,7 @@ class Config:
     SQLALCHEMY_ECHO = False
     
     # Upload Settings
-    UPLOAD_FOLDER = 'uploads'
+    UPLOAD_FOLDER = 'yemekfiles'
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB max file size
     ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp'}
     

@@ -1,0 +1,46 @@
+services:
+  yemek:
+    build: .
+    container_name: yemek
+    restart: always
+    # Uygulama kodu root olarak çalışmıyor (bkz. Dockerfile > entrypoint.sh, uid 10001).
+    # Container root olarak başlar, entrypoint.sh her başlangıçta ecedocfiles ve
+    # static/uploads/isletmeler volume mount'larının sahipliğini otomatik onarıp
+    # gosu ile ecedocappuser'a düşer — named volume'ların ilk oluşumda root'a ait
+    # kalması (bkz. md/softwarestandarts.md > "Named volume ownership: otomatik
+    # onaran entrypoint") artık manuel chown gerektirmiyor.
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Europe/Istanbul
+    volumes:
+      - yemekfiles:/app/yemekfiles
+    # restart: always tek başına yetmiyordu: Docker yalnızca "süreç ayakta mı"
+    # bilgisine bakıyor, gunicorn çalışırken DB havuzu bozuk olsa bile container
+    # "healthy" görünüp nginx trafik göndermeye devam ediyordu. /saglik ucu
+    # veritabanına gerçekten dokunur (bkz. app/__init__.py > saglik).
+    #
+    # urlopen 503'te HTTPError fırlatır (dönüş değeri vermez), bu yüzden istek
+    # try/except içinde: 200 -> 0 (healthy), diğer her şey -> 1. Aksi halde
+    # DB bozukken healthcheck "python hatası" yüzünden başarısız olurdu ve
+    # sebep loglarda görünmezdi.
+    # start_period: LibreOffice/torch kurulu imaj açılışı yavaş olabildiği için
+    # ilk 40 sn'deki başarısızlıklar "unhealthy" saymaz.
+    healthcheck:
+      test: ["CMD", "python", "/app/healthcheck.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "5004:5004"
+    networks:
+      - nginx
+    expose:
+      - "5004"
+
+networks:
+  nginx:
+    external: true
+
+volumes:
+  yemekfiles:

@@ -287,7 +287,7 @@ def register_routes(app):
                     # Save image
                     filename = f"{slug}_{datetime.utcnow().timestamp()}.{image.filename.rsplit('.', 1)[1].lower()}"
                     image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                    image_url = f"/uploads/{filename}"
+                    image_url = f"/yemekfiles/{filename}"
             
             # If no image uploaded or URL provided, use default Turkish food image
             if not image_url:
@@ -361,7 +361,7 @@ def register_routes(app):
                 if image and image.filename and allowed_file(image.filename):
                     filename = f"{recipe.slug}_{datetime.utcnow().timestamp()}.{image.filename.rsplit('.', 1)[1].lower()}"
                     image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                    recipe.image_url = f"/uploads/{filename}"
+                    recipe.image_url = f"/yemekfiles/{filename}"
             
             # Update tags
             tag_ids = request.form.getlist('tags', type=int)
