@@ -4,7 +4,9 @@ from werkzeug.utils import secure_filename
 from functools import wraps
 from datetime import datetime
 import os
+import json
 from pathlib import Path
+from sqlalchemy import func
 
 from config import Config
 from models import db, Recipe, Tag, Comment
@@ -46,13 +48,84 @@ def register_routes(app):
     
     @app.route('/')
     def index():
-        """Home page with latest recipes"""
+        """Home page with latest recipes and dashboard"""
         page = request.args.get('page', 1, type=int)
         recipes = Recipe.query.order_by(Recipe.created_at.desc()).paginate(
             page=page, per_page=app.config['RECIPES_PER_PAGE']
         )
         tags = Tag.query.all()
-        return render_template('index.html', recipes=recipes, tags=tags)
+        
+        # Gather dashboard statistics
+        total_recipes = Recipe.query.count()
+        total_comments = Comment.query.count()
+        
+        # Calculate average cooking time
+        avg_cook_time = db.session.query(func.avg(Recipe.cook_time)).scalar()
+        avg_cook_time = round(avg_cook_time) if avg_cook_time else 0
+        
+        # Get cooking time distribution for bar chart
+        recipes_list = Recipe.query.all()
+        time_ranges = {
+            '0-30 dk': 0,
+            '30-60 dk': 0,
+            '60-120 dk': 0,
+            '120+ dk': 0
+        }
+        
+        for recipe in recipes_list:
+            if recipe.cook_time:
+                if recipe.cook_time <= 30:
+                    time_ranges['0-30 dk'] += 1
+                elif recipe.cook_time <= 60:
+                    time_ranges['30-60 dk'] += 1
+                elif recipe.cook_time <= 120:
+                    time_ranges['60-120 dk'] += 1
+                else:
+                    time_ranges['120+ dk'] += 1
+        
+        # Get tag distribution for donut chart
+        tag_distribution = {}
+        for tag in tags:
+            recipe_count = tag.recipes.count()
+            if recipe_count > 0:
+                tag_distribution[tag.name] = recipe_count
+        
+        # Prepare chart data as JSON strings
+        time_chart_data = json.dumps({
+            'labels': list(time_ranges.keys()),
+            'datasets': [{
+                'label': 'Tarif Sayısı',
+                'data': list(time_ranges.values()),
+                'backgroundColor': '#10b981',
+                'borderColor': '#059669',
+                'borderWidth': 1
+            }]
+        })
+        
+        # Only include top tags to avoid cluttering
+        top_tags = sorted(tag_distribution.items(), key=lambda x: x[1], reverse=True)[:8]
+        tag_chart_data = json.dumps({
+            'labels': [tag[0] for tag in top_tags],
+            'datasets': [{
+                'data': [tag[1] for tag in top_tags],
+                'backgroundColor': [
+                    '#0f172a', '#1e293b', '#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1', '#e2e8f0'
+                ],
+                'borderColor': '#f8fafc',
+                'borderWidth': 2
+            }]
+        })
+        
+        return render_template(
+            'index.html', 
+            recipes=recipes, 
+            tags=tags,
+            total_recipes=total_recipes,
+            total_comments=total_comments,
+            avg_cook_time=avg_cook_time,
+            time_chart_data=time_chart_data,
+            tag_chart_data=tag_chart_data
+        )
     
     @app.route('/search')
     def search():

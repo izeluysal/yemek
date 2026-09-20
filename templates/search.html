@@ -4,13 +4,13 @@
 
 {% block content %}
 <div style="max-width: 1000px; margin: 0 auto;">
-    <h1 class="mb-4" style="font-size: 2rem; font-weight: 700;">Tarif Ara</h1>
+    <h1 class="mb-4" style="font-size: 2rem; font-weight: 700; color: #1e293b;">Tarif Ara</h1>
     
     <!-- Search Form -->
     <form method="get" action="{{ url_for('search') }}" class="card p-4 mb-5" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
         <div class="row g-3">
             <div class="col-md-8">
-                <input type="text" name="q" class="form-control" placeholder="Tarif adı, malzeme vb. ara..." value="{{ query }}" style="font-size: 1rem; padding: 12px 16px; border-radius: 8px;">
+                <input type="text" name="q" class="form-control" placeholder="Tarif adı, malzeme vb. ara..." value="{{ query }}" style="font-size: 1rem; padding: 12px 16px; border-radius: 8px; border: 2px solid #cbd5e1;">
             </div>
             <div class="col-md-4">
                 <button type="submit" class="btn btn-primary w-100" style="font-weight: 600; padding: 12px 16px; border-radius: 8px;">🔍 Ara</button>
@@ -20,13 +20,13 @@
         <!-- Tag Filter -->
         {% if tags %}
             <div class="mt-4">
-                <label class="form-label" style="font-weight: 600; margin-bottom: 12px;">Etiket ile Filtrele:</label>
+                <label class="form-label" style="font-weight: 600; margin-bottom: 12px; color: #1e293b;">Etiket ile Filtrele:</label>
                 <div>
                     {% for tag in tags %}
                         <div class="form-check form-check-inline" style="margin-right: 16px; margin-bottom: 8px;">
                             <input class="form-check-input" type="checkbox" name="tags" value="{{ tag.id }}" id="tag-{{ tag.id }}" 
                                 {% if tag.id in selected_tags %}checked{% endif %}>
-                            <label class="form-check-label" for="tag-{{ tag.id }}">
+                            <label class="form-check-label" for="tag-{{ tag.id }}" style="color: #1e293b;">
                                 {{ tag.name }}
                             </label>
                         </div>
@@ -64,10 +64,10 @@
                         {% if recipe.prep_time or recipe.cook_time %}
                         <div class="mb-3" style="display: flex; gap: 8px; flex-wrap: wrap;">
                             {% if recipe.prep_time %}
-                                <span class="badge bg-light text-dark" style="font-size: 0.85rem; padding: 6px 10px;">⏱️ {{ recipe.prep_time }} dk</span>
+                                <span class="badge" style="font-size: 0.85rem; padding: 6px 10px; background-color: #dbeafe; color: #1e40af;">⏱️ {{ recipe.prep_time }} dk</span>
                             {% endif %}
                             {% if recipe.cook_time %}
-                                <span class="badge bg-light text-dark" style="font-size: 0.85rem; padding: 6px 10px;">🔥 {{ recipe.cook_time }} dk</span>
+                                <span class="badge" style="font-size: 0.85rem; padding: 6px 10px; background-color: #dcfce7; color: #15803d;">🔥 {{ recipe.cook_time }} dk</span>
                             {% endif %}
                         </div>
                         {% endif %}
@@ -76,7 +76,7 @@
                         {% if recipe.tags %}
                             <div class="mb-3" style="display: flex; gap: 6px; flex-wrap: wrap;">
                                 {% for tag in recipe.tags %}
-                                    <a href="{{ url_for('search', tags=[tag.id]) }}" class="badge bg-secondary badge-tag" style="font-size: 0.8rem; padding: 4px 8px;">{{ tag.name }}</a>
+                                    <a href="{{ url_for('search', tags=[tag.id]) }}" class="badge badge-tag" style="font-size: 0.8rem; padding: 4px 8px; background-color: #e2e8f0; color: #1e293b; text-decoration: none;">{{ tag.name }}</a>
                                 {% endfor %}
                             </div>
                         {% endif %}
