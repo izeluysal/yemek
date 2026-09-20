@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 from config import Config
-from models import db, Recipe, Tag
+from models import db, Recipe, Tag, Comment
 
 
 def create_app():
@@ -95,11 +95,34 @@ def register_routes(app):
             selected_tags=selected_tags
         )
     
-    @app.route('/tarif/<slug>')
+    @app.route('/tarif/<slug>', methods=['GET', 'POST'])
     def recipe_detail(slug):
         """Recipe detail page"""
         recipe = Recipe.query.filter_by(slug=slug).first_or_404()
-        return render_template('recipe_detail.html', recipe=recipe)
+        
+        # Handle comment submission
+        if request.method == 'POST':
+            author_name = request.form.get('author_name', '').strip()
+            author_email = request.form.get('author_email', '').strip()
+            rating = request.form.get('rating', type=int)
+            comment_text = request.form.get('comment_text', '').strip()
+            
+            if author_name and author_email and rating and comment_text:
+                comment = Comment(
+                    recipe_id=recipe.id,
+                    author_name=author_name,
+                    author_email=author_email,
+                    rating=rating,
+                    text=comment_text
+                )
+                db.session.add(comment)
+                db.session.commit()
+                return redirect(url_for('recipe_detail', slug=slug))
+        
+        # Get comments
+        comments = Comment.query.filter_by(recipe_id=recipe.id).order_by(Comment.created_at.desc()).all()
+        
+        return render_template('recipe_detail.html', recipe=recipe, comments=comments)
     
     # ============ ADMIN ROUTES ============
     
@@ -127,11 +150,13 @@ def register_routes(app):
         """Admin panel dashboard"""
         recipes = Recipe.query.order_by(Recipe.created_at.desc()).all()
         tags = Tag.query.all()
+        comments = Comment.query.order_by(Comment.created_at.desc()).all()
         stats = {
             'total_recipes': len(recipes),
             'total_tags': len(tags),
+            'total_comments': len(comments),
         }
-        return render_template('admin/panel.html', recipes=recipes, tags=tags, stats=stats)
+        return render_template('admin/panel.html', recipes=recipes, tags=tags, comments=comments, stats=stats)
     
     @app.route('/admin/recipe/new', methods=['GET', 'POST'])
     @admin_required
@@ -275,6 +300,17 @@ def register_routes(app):
     def allowed_file(filename):
         """Check if file extension is allowed"""
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+    
+    # Comment management
+    @app.route('/admin/comment/<int:comment_id>/delete', methods=['POST'])
+    @admin_required
+    def admin_delete_comment(comment_id):
+        """Delete a comment"""
+        comment = Comment.query.get_or_404(comment_id)
+        recipe_slug = comment.recipe.slug
+        db.session.delete(comment)
+        db.session.commit()
+        return redirect(url_for('admin_panel'))
     
     # Favicon handler (suppress browser requests)
     @app.route('/favicon.ico')

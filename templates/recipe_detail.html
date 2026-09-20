@@ -96,6 +96,82 @@
             </div>
         </div>
         
+        <!-- Comments Section -->
+        <div class="mb-4">
+            <h3 class="mb-4">💬 Yorumlar ({{ comments|length }})</h3>
+            
+            <!-- Comment Form -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Yorum Yaz</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('recipe_detail', slug=recipe.slug) }}">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="author_name" class="form-label">Adınız *</label>
+                                <input type="text" class="form-control" id="author_name" name="author_name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="author_email" class="form-label">E-mail *</label>
+                                <input type="email" class="form-control" id="author_email" name="author_email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">Rating *</label>
+                            <select class="form-select" id="rating" name="rating" required>
+                                <option value="">Seçiniz...</option>
+                                <option value="5">⭐⭐⭐⭐⭐ Mükemmel</option>
+                                <option value="4">⭐⭐⭐⭐ Çok İyi</option>
+                                <option value="3">⭐⭐⭐ İyi</option>
+                                <option value="2">⭐⭐ Orta</option>
+                                <option value="1">⭐ Kötü</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="comment_text" class="form-label">Yorumunuz *</label>
+                            <textarea class="form-control" id="comment_text" name="comment_text" rows="4" placeholder="Tarif hakkında ne düşünüyorsunuz?" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Yorum Gönder</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Comments List -->
+            {% if comments %}
+                <div>
+                    {% for comment in comments %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="card-title mb-1">{{ comment.author_name }}</h6>
+                                        <div class="mb-2">
+                                            {% for i in range(comment.rating) %}
+                                                <span class="text-warning">⭐</span>
+                                            {% endfor %}
+                                            {% for i in range(5 - comment.rating) %}
+                                                <span class="text-muted">☆</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">{{ comment.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                                </div>
+                                <p class="card-text">{{ comment.text }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Henüz yorum yapılmamış. İlk yorum yapan siz olun! ✨
+                </div>
+            {% endif %}
+        </div>
+        
         <!-- Back Button -->
         <div class="mb-4">
             <a href="{{ url_for('index') }}" class="btn btn-outline-primary">← Geri Dön</a>

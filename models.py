@@ -98,3 +98,35 @@ class Tag(db.Model):
             'name': self.name,
             'recipe_count': self.recipes.count(),
         }
+
+
+class Comment(db.Model):
+    """Comment Model"""
+    __tablename__ = 'comment'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False, index=True)
+    author_name = db.Column(db.String(100), nullable=False)
+    author_email = db.Column(db.String(255), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # 1-5 stars
+    text = db.Column(db.Text, nullable=False)
+    
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, index=True)
+    
+    # Relationship
+    recipe = db.relationship('Recipe', backref=db.backref('comments', lazy='dynamic', cascade='all, delete-orphan'))
+    
+    def __repr__(self):
+        return f'<Comment by {self.author_name} on Recipe {self.recipe_id}>'
+    
+    def to_dict(self):
+        """Convert comment to dictionary"""
+        return {
+            'id': self.id,
+            'recipe_id': self.recipe_id,
+            'author_name': self.author_name,
+            'author_email': self.author_email,
+            'rating': self.rating,
+            'text': self.text,
+            'created_at': self.created_at.isoformat(),
+        }
