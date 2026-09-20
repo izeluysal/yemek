@@ -192,6 +192,10 @@ def register_routes(app):
                     image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                     image_url = f"/uploads/{filename}"
             
+            # If no image uploaded, use Unsplash API
+            if not image_url:
+                image_url = Recipe.generate_image_url(title)
+            
             # Create recipe
             recipe = Recipe(
                 title=title,
@@ -244,6 +248,10 @@ def register_routes(app):
                     filename = f"{recipe.slug}_{datetime.utcnow().timestamp()}.{image.filename.rsplit('.', 1)[1].lower()}"
                     image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                     recipe.image_url = f"/uploads/{filename}"
+            
+            # If no image and title changed, regenerate Unsplash URL
+            if not recipe.image_url or (not recipe.image_url.startswith('/uploads/') and recipe.title != request.form.get('title')):
+                recipe.image_url = Recipe.generate_image_url(recipe.title)
             
             # Update tags
             tag_ids = request.form.getlist('tags', type=int)

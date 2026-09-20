@@ -77,6 +77,15 @@ class Recipe(db.Model):
         # Remove leading/trailing hyphens
         slug = slug.strip('-')
         return slug
+    
+    @staticmethod
+    def generate_image_url(title):
+        """Generate Unsplash image URL from recipe title"""
+        from urllib.parse import quote
+        # Use Unsplash Source API with recipe title as search parameter
+        # Format: https://source.unsplash.com/featured/400x300/?food,{title}
+        encoded_title = quote(title)
+        return f'https://source.unsplash.com/featured/400x300/?food,{encoded_title}'
 
 
 class Tag(db.Model):
