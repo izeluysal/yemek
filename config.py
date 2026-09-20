@@ -14,7 +14,7 @@ class Config:
     DEBUG = True
     
     # Database - use absolute path with forward slashes for SQLite
-    DATABASE_PATH = BASE_DIR / 'data' / 'app.db'
+    DATABASE_PATH = BASE_DIR / 'yemekdata' / 'app.db'
     SQLALCHEMY_DATABASE_URI = f'sqlite:///{DATABASE_PATH.as_posix()}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False

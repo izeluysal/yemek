@@ -47,4 +47,4 @@ Thumbs.db
 # Application
 instance/
 *.db
-data/old/
+yemekdata/old/

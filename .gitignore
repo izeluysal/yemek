@@ -37,9 +37,9 @@ wheels/
 .DS_Store
 
 # Database
-data/app.db
-data/app.db-wal
-data/app.db-shm
+yemekdata/app.db
+yemekdata/app.db-wal
+yemekdata/app.db-shm
 
 # Uploads
 yemekfiles/

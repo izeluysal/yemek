@@ -10,9 +10,9 @@ if [ "$(id -u)" = "0" ]; then
         chown -R ecedocappuser:ecedocappuser /app/yemekfiles
     fi
     
-    # Data klasörü sahipliğini düzelt
-    if [ -d "/app/data" ]; then
-        chown -R ecedocappuser:ecedocappuser /app/data
+    # Yemekdata klasörü sahipliğini düzelt
+    if [ -d "/app/yemekdata" ]; then
+        chown -R ecedocappuser:ecedocappuser /app/yemekdata
     fi
     
     # gosu ile ecedocappuser'a düş

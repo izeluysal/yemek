@@ -45,8 +45,8 @@ ENV PATH="/opt/venv/bin:$PATH" \
 COPY --chown=ecedocappuser:ecedocappuser . /app/
 
 # Create necessary directories with correct permissions
-RUN mkdir -p /app/data /app/yemekfiles && \
-    chown -R ecedocappuser:ecedocappuser /app/data /app/yemekfiles
+RUN mkdir -p /app/yemekdata /app/yemekfiles && \
+    chown -R ecedocappuser:ecedocappuser /app/yemekdata /app/yemekfiles
 
 # Copy and make entrypoint script executable
 COPY entrypoint.sh /app/entrypoint.sh
