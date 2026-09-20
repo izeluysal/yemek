@@ -40,11 +40,24 @@ Veritabanında tutulacak temel tablolar ve alanlar:
 * `name`: Etiket adı (Örn: `tuz`, `zeytinyağlı`, `fırın`, `pratik`)
 * *İlişki:* Bir tarifin birden fazla etiketi olabilir (Many-to-Many).
 
+### C. Yorumlar Tablosu (Comments)
+* `id`: Benzersiz kimlik
+* `recipe_id`: Tariflerin Foreign Key
+* `author_name`: Yazar adı
+* `author_email`: Yazar e-mail
+* `rating`: 1-5 arası derecelendirme (yıldız)
+* `text`: Yorum metni
+* `created_at`: Yorum tarihi/zamanı (Otomatik damga)
+* *İlişki:* Bir tarife birden fazla yorum yapılabilir (One-to-Many).
+
 ---
 
 ## 4. Kullanıcı Etkileşimi ve Yorum Politikası
-* **Yorum Durumu:** Sitede ziyaretçilerin yorum yazma alanı **OLMAYACAK**.
-* **Gerekçe:** Proje kişisel, sade ve reklamsız bir dijital tarif defteri olarak tasarlandığı için harici kullanıcı etkileşimi, spam riskleri ve bildirim altyapısı devre dışı bırakılmıştır.
+* **Yorum Durumu:** Sitede ziyaretçiler **1-5 yıldız** derecelendirmesi ile yorum yazabilirler.
+* **Moderasyon:** Yorumlar otomatik olarak yayınlanır (admin onayı gerekmez).
+* **Saklama:** Yorum yazarının adı, e-mail, derecelendirme ve metni kaydedilir.
+* **Yönetim:** Admin panelinden istenmeyen yorumlar silinebilir.
+* **Amaç:** Ziyaretçiler tarafından tarif hakkında fikir alışverişi yapılması hedeflenmiştir.
 
 ---
 
