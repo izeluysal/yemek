@@ -14,6 +14,7 @@ services:
       - TZ=Europe/Istanbul
     volumes:
       - yemekfiles:/app/yemekfiles
+      - data:/app/data
     # restart: always tek başına yetmiyordu: Docker yalnızca "süreç ayakta mı"
     # bilgisine bakıyor, gunicorn çalışırken DB havuzu bozuk olsa bile container
     # "healthy" görünüp nginx trafik göndermeye devam ediyordu. /saglik ucu
@@ -44,3 +45,4 @@ networks:
 
 volumes:
   yemekfiles:
+  data:
